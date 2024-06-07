@@ -14,6 +14,21 @@
 #top2{
     text-align: center;color: rgb(255, 136, 0);
 }
+#inner,#outer{
+    display: flex;flex-direction: row;
+}
+#outer{
+    margin-bottom: 20px;
+}
+#outer>div{
+    margin-right: 30px;
+}
+#inner>div{
+    margin-right: 20px;
+}
+#button{
+    margin-top: 15px;
+}
 @media screen and (max-width:700px){
     #host{
         flex-direction: column;
