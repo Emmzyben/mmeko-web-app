@@ -7,6 +7,7 @@ import { useUser } from "../context/user";
 import { useRouter } from "next/navigation";
 import { UploadError } from "../types";
 import ImageUpload from "../components/ImageUpload.";
+import "../components/style.css"
 
 export default function CreateHost() {
   const inputClassName =
@@ -128,13 +129,13 @@ export default function CreateHost() {
 
   
   return (
-    <div className="min-h-[80vh] my-10 mt-0 px-32">
-      <h1 className="text-6xl text-gray-900 mb-5">Create a new Gig</h1>
-      <h3 className="text-3xl text-gray-900 mb-5">
+    <div className="min-h-[80vh] my-10 mt-0" style={{padding:'30px'}}>
+      <h1 className=" text-gray-900 mb-5" id="top1">Create a new Gig</h1>
+      <h3 className=" text-gray-900 mb-5" id="top2">
         Enter the details to create the gig
       </h3>
       <form action="" className="flex flex-col gap-5 mt-10">
-        <div className="grid grid-cols-2 gap-11">
+        <div id="host">
           <div>
             <label htmlFor="title" className={labelClassName}>
                Title
@@ -182,7 +183,7 @@ export default function CreateHost() {
             onChange={event => setDescription(event.target.value)}
           ></textarea>
         </div>
-        <div className="grid grid-cols-2 gap-11">
+        <div id="host">
           <div>
             <label htmlFor="name">Name</label>
             <input
@@ -210,7 +211,7 @@ export default function CreateHost() {
             />
           </div>
         </div>
-        <div className="grid grid-cols-2 gap-11">
+        <div id="host">
           <div>
             <label htmlFor="location" className={labelClassName}>
               Location
@@ -220,7 +221,7 @@ export default function CreateHost() {
                 type="text"
                 id="location"
                 className={inputClassName}
-                placeholder="Enter a Feature Name"
+                placeholder="Enter your location"
                 name="location"
                 value={location}
                 onChange={event => setLocation(event.target.value)}
@@ -236,7 +237,7 @@ export default function CreateHost() {
             </div>
           </div>
         </div>
-        <div className="grid grid-cols-2 gap-11">
+        <div id="host">
           <div>
             <label htmlFor="shortDesc" className={labelClassName}>
               Short Description
