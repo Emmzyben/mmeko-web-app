@@ -165,5 +165,5 @@
 }
 
 #hot{
-  position: relative;top: -1%;
+  position: fixed;top: 10%; border-bottom-width: 5px;z-index: 10000;
 }
