@@ -71,10 +71,10 @@ export default function ModelPageTopbar() {
                                                 <BiUser size="20" className="text-zinc"/>
                                                 <span className="pl-2 font-semibold text-zinc text-sm">Become a Model</span>
                                             </button>
-
+{/* ${userContext?.user?.id} */}
                                             <button 
                                                 onClick={() => { 
-                                                    router.push(`/profile/${userContext?.user?.id}`)
+                                                    router.push(`/mylistings/`)  
                                                     setShowMenu(false)
                                                 }}
                                                 className="flex items-center w-full justify-start py-3 px-2 hover:bg-dark-5 cursor-pointer"
@@ -82,10 +82,10 @@ export default function ModelPageTopbar() {
                                                 <LuLayoutList size="20" className="text-zinc"/>
                                                 <span className="pl-2 font-semibold text-zinc text-sm">My Listings</span>
                                             </button>
-
+{/* ${userContext?.user?.id} */}
                                             <button 
                                                 onClick={() => { 
-                                                    router.push(`/profile/${userContext?.user?.id}`)
+                                                    router.push(`/myCrush/`)
                                                     setShowMenu(false)
                                                 }}
                                                 className="flex items-center w-full justify-start py-3 px-2 hover:bg-dark-5 cursor-pointer"
@@ -93,10 +93,10 @@ export default function ModelPageTopbar() {
                                                 <FaRegHeart size="20" className="text-zinc"/>
                                                 <span className="pl-2 font-semibold text-zinc text-sm">My Crush</span>
                                             </button>
-
+{/* ${userContext?.user?.id} */}
                                             <button 
                                                 onClick={() => { 
-                                                    router.push(`/profile/${userContext?.user?.id}`)
+                                                    router.push(`/bookings/`)
                                                     setShowMenu(false)
                                                 }}
                                                 className="flex items-center w-full justify-start py-3 px-2 hover:bg-dark-5 cursor-pointer"
@@ -116,6 +116,18 @@ export default function ModelPageTopbar() {
                                                 <BiUser size="20" className="text-zinc"/>
                                                 <span className="pl-2 font-semibold text-zinc text-sm">Profile</span>
                                             </button>
+{/* ${userContext?.user?.id} */}
+                                            <button 
+                                                onClick={() => { 
+                                                    router.push(`/wallet/`)
+                                                    setShowMenu(false)
+                                                }}
+                                                className="flex items-center w-full justify-start py-3 px-2 hover:bg-dark-5 cursor-pointer"
+                                            >
+                                                <BiUser size="20" className="text-zinc"/>
+                                                <span className="pl-2 font-semibold text-zinc text-sm">My Wallet</span>
+                                            </button>
+
                                             <button 
                                                 onClick={async () => {
                                                     await userContext?.logout()
@@ -126,6 +138,7 @@ export default function ModelPageTopbar() {
                                                 <FiLogOut size={20} className="text-zinc" />
                                                 <span className="pl-2 font-semibold text-zinc text-sm">Log out</span>
                                             </button>
+
                                         </div>
                                     ) : null}
                                 </div>

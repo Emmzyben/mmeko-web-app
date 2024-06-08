@@ -70,6 +70,19 @@ export default function Topbar() {
                                                 <BiUser size="20" className="text-zinc"/>
                                                 <span className="pl-2 font-semibold text-zinc text-sm">Profile</span>
                                             </button>
+
+                                            {/* ${userContext?.user?.id} */}
+                                            <button 
+                                                onClick={() => { 
+                                                    router.push(`/wallet/`)
+                                                    setShowMenu(false)
+                                                }}
+                                                className="flex items-center w-full justify-start py-3 px-2 hover:bg-dark-5 cursor-pointer"
+                                            >
+                                                <BiUser size="20" className="text-zinc"/>
+                                                <span className="pl-2 font-semibold text-zinc text-sm">My Wallet</span>
+                                            </button>
+                                            
                                             <button 
                                                 onClick={async () => {
                                                     await userContext?.logout()
