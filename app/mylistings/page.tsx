@@ -29,11 +29,10 @@ const Mylistings = () => {
 
       
     return (
-      <>
-      
-      
+      <> 
       <div>
-   
+      <h1 className='font-bold text-light-orange text-center'>Summary Of Listings</h1>
+      <p className='font-bold text-center' style={{color:'white',lineHeight:"25px"}}>Here is a summary of all your listings</p>
     
       </div>
       </>

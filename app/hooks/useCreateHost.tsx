@@ -1,7 +1,7 @@
 import { database, storage, ID } from "@/libs/AppWriteClient"
 
 const useCreateHost = async (file: File, userId: string, title: string, description: string,categories: string,
-price: string, name: string, location: string, revisions: string, shortDesc: string,) => {
+price: number, name: string, location: string, revisions: string, shortDesc: string,) => {
     let imageId = Math.random().toString(36).slice(2, 22)
 
     try {

@@ -30,10 +30,9 @@ const MyCrush = () => {
       
     return (
       <>
-      
-      
-      <div>
-   
+    <div>
+    <h1 className='font-bold text-light-orange text-center' style={{fontSize:'30px'}}>My Favourites</h1>
+    
     
       </div>
       </>

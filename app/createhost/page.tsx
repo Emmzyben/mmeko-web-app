@@ -18,13 +18,16 @@ export default function CreateHost() {
 
     const [data, setData] = useState({
       title: "",
-      category: "",
       description: "",
-      time: 0,
-      revisions: 0,
-      feature: "",
+      category: "",
       price: 0,
-      shortDesc: "",
+      name:"",
+      location:"",
+      revisions: 0,  
+     shortDesc: "",
+      time: 0,
+      feature: "",
+   
     });
   
     const handleChange = (e) => {
@@ -41,7 +44,7 @@ export default function CreateHost() {
     let [revisions, setRevisions] = useState<string>('');
     let [shortDesc, setShortDesc] = useState<string>('');
     let [location, setLocation] = useState<string>('');
-    let [price, setPrice] = useState<string>('');
+    let [price, setPrice] = useState<number>(0);
     let [name, setName] = useState<string>('');
     const [files, setFile] = useState<any>([]);
     let [error, setError] = useState<UploadError | null>(null);
@@ -117,7 +120,7 @@ export default function CreateHost() {
         setIsUploading(true)
 
         try {
-            await useCreateHost(files, contextUser?.user?.id, title, categories, description, name, revisions, location, shortDesc, price)
+            await useCreateHost(files, contextUser?.user?.id, title, description, categories, price, name, location,revisions,  shortDesc)
             router.push(`/models/${contextUser?.user?.id}`)
             setIsUploading(false)
         } catch (error) {

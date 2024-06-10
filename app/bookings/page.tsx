@@ -30,10 +30,9 @@ const Bookings = () => {
       
     return (
       <>
-      
-      
       <div>
-   
+      <h1 className='font-bold text-light-orange text-center' style={{fontSize:'30px'}}>My Bookings</h1>
+    
     
       </div>
       </>
