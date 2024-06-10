@@ -44,7 +44,7 @@ export default function CreateHost() {
     let [revisions, setRevisions] = useState<string>('');
     let [shortDesc, setShortDesc] = useState<string>('');
     let [location, setLocation] = useState<string>('');
-    let [price, setPrice] = useState<number>(0);
+    let [price, setPrice] = useState<string>('');
     let [name, setName] = useState<string>('');
     const [files, setFile] = useState<any>([]);
     let [error, setError] = useState<UploadError | null>(null);
