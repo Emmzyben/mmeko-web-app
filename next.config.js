@@ -13,7 +13,7 @@ const nextConfig = {
         
     },
     images: {
-        domains: ["localhost"]
+        domains: ["ipfs.io"]
         
     
     }

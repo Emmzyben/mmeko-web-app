@@ -1,29 +1,44 @@
-// @ts-nocheck
 import Image from "next/image";
-import React from "react";
+import React, { useState } from "react";
 
 function ImageUpload({ files, setFile }) {
-  const { useState } = React;
+  const [message, setMessage] = useState("");
 
-  const [message, setMessage] = useState();
   const handleFile = (e) => {
-    setMessage("");
-    let file = e.target.files;
+    setMessage(""); // Clear any previous error message
+    const selectedFiles = e.target.files;
 
-    for (let i = 0; i < file.length; i++) {
-      const fileType = file[i]["type"];
-      const validImageTypes = ["image/gif", "image/jpeg", "image/png"];
-      if (validImageTypes.includes(fileType)) {
-        setFile([...files, file[i]]);
-      } else {
-        setMessage("only images accepted");
+    // Ensure files were selected
+    if (selectedFiles && selectedFiles.length > 0) {
+      for (let i = 0; i < selectedFiles.length; i++) {
+        const file = selectedFiles[i];
+
+        // Ensure each selected file is a File object
+        if (file instanceof File) {
+          const fileType = file.type;
+          const validImageTypes = ["image/gif", "image/jpeg", "image/png"];
+
+          // Check if the file type is valid
+          if (validImageTypes.includes(fileType)) {
+            // Update files state with the new file
+            setFile((prevFiles) => [...prevFiles, file]);
+          } else {
+            setMessage("Only images are accepted");
+          }
+        } else {
+          console.error("Invalid file:", file);
+        }
       }
+    } else {
+      console.warn("No files selected");
     }
   };
 
-  const removeImage = (i) => {
-    setFile(files.filter((x) => x.name !== i));
+  const removeImage = (fileName) => {
+    // Filter out the file to be removed from the files array
+    setFile((prevFiles) => prevFiles.filter((file) => file.name !== fileName));
   };
+
   return (
     <div>
       <div className="flex  items-center px-3">

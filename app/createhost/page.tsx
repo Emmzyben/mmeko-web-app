@@ -6,6 +6,7 @@ import useCreateHost from "../hooks/useCreateHost";
 import { useUser } from "../context/user";
 import { useRouter } from "next/navigation";
 import { UploadError } from "../types";
+import { create} from "ipfs-http-client";
 import ImageUpload from "../components/ImageUpload.";
 import "../components/style.css"
 
@@ -14,6 +15,17 @@ export default function CreateHost() {
     "block p-4 w-full text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50  focus:ring-blue-500 focus:border-blue-500";
   const labelClassName =
     "mb-2 text-lg font-medium text-gray-900  dark:text-white";
+
+    const auth = 'Basic ' + Buffer.from('2N3HCLyqYPZBgoE268VuFbhb4gd' + ':' + '2348eeac740a001d6a849b64155c48de',).toString('base64');
+
+    const ipfs = create({
+        host: 'ipfs.infura.io',
+        port: 5001,
+        protocol: 'https',
+        headers: {
+          authorization: auth,
+        },
+      })
 
 
     const [data, setData] = useState({
@@ -44,9 +56,9 @@ export default function CreateHost() {
     let [revisions, setRevisions] = useState<string>('');
     let [shortDesc, setShortDesc] = useState<string>('');
     let [location, setLocation] = useState<string>('');
-    let [price, setPrice] = useState<string>('');
+    let [price, setPrice] = useState<number>(0);
     let [name, setName] = useState<string>('');
-    const [files, setFile] = useState<any>([]);
+    const [url, seturl] = useState<string>('');
     let [error, setError] = useState<UploadError | null>(null);
     let [isUploading, setIsUploading] = useState<boolean>(false);
 
@@ -55,57 +67,70 @@ export default function CreateHost() {
     }, [contextUser])
 
 
-
-    const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-      const files = event.target.files;
-
-
-        if (files && files.length > 0) {
-            const file = files[0];
-            const fileUrl = URL.createObjectURL(file);
-            setFileDisplay(fileUrl);
-            setFile(file);
+   
+    const handleSubmit = async (event) => {
+      event.preventDefault();
+      const file = event.target.files[0];
+  
+      if (!file) {
+        return alert("No files selected");
+      }
+  
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onloadend = async () => {
+        const fileContent = reader.result;
+        try {
+          const created = await ipfs.add(file);
+          const URI = `https://ipfs.io/ipfs/${created.cid}`;
+          seturl(URI);
+          setFileDisplay(URI);
+        } catch (error) {
+          console.error("Error uploading file to IPFS:", error);
+          alert("File upload failed. Please try again.");
         }
-    }
+      };
+    };
+
     
 
     const validate = () => {
         setError(null)
         let isError = false
 
-        if (!files) {
-            setError({ type: 'File', message: 'A video is required'})
+        if (!url) {
+            setError({ type: 'File', message: 'A picture is required'})
             isError = true
         } else if (!title) {
-            setError({ type: 'caption', message: 'A caption is required'})
+            setError({ type: 'caption', message: 'A title is required'})
             isError = true
         }
         else if (!categories) {
-          setError({ type: 'categories', message: 'A caption is required'})
+          setError({ type: 'categories', message: 'A Categories is required'})
           isError = true
         }
       else if (!description) {
-        setError({ type: 'description', message: 'A caption is required'})
+        setError({ type: 'description', message: 'A description is required'})
         isError = true
         }
       else if (!name) {
-        setError({ type: 'name', message: 'A caption is required'})
+        setError({ type: 'name', message: 'A Name is required'})
         isError = true
         }
         else if (!location) {
-          setError({ type: 'location', message: 'A caption is required'})
+          setError({ type: 'location', message: 'A location is required'})
           isError = true
         }
         else if (!revisions) {
-          setError({ type: 'revisions', message: 'A caption is required'})
+          setError({ type: 'revisions', message: 'A revision is required'})
           isError = true
         }
         else if (!shortDesc) {
-          setError({ type: 'shortDesc', message: 'A caption is required'})
+          setError({ type: 'shortDesc', message: 'A short description is required'})
           isError = true
         }
         else if (!price) {
-          setError({ type: 'price', message: 'A caption is required'})
+          setError({ type: 'price', message: 'A price is required'})
           isError = true
         }
 
@@ -114,21 +139,23 @@ export default function CreateHost() {
     }
 
     const createNewHost = async () => {
-        let isError = validate()
-        if (isError) return
-        if (!files || !contextUser?.user) return
-        setIsUploading(true)
-
-        try {
-            await useCreateHost(files, contextUser?.user?.id, title, description, categories, price, name, location,revisions,  shortDesc)
-            router.push(`/models/${contextUser?.user?.id}`)
-            setIsUploading(false)
-        } catch (error) {
-            console.log(error)
-            setIsUploading(false)
-            alert(error)
-        }
-    }
+      let isError = validate();
+      if (isError) return;
+      if (!url || !contextUser?.user) return;
+      setIsUploading(true);
+    
+      try {
+        await useCreateHost(url, contextUser?.user?.id, title, description, categories, price, name, location, revisions, shortDesc);
+        alert('Posting successful!');
+        router.push(`/models/${contextUser?.user?.id}`);
+        setIsUploading(false);
+      } catch (error) {
+        console.log(error);
+        setIsUploading(false);
+        alert(error);
+      }
+    };
+    
 
   
   return (
@@ -231,14 +258,11 @@ export default function CreateHost() {
               />
               </div>
           </div>
-          <div>
-            <label htmlFor="image" className={labelClassName}>
-              Gig Images
-            </label>
-            <div>
-              <ImageUpload files={files} setFile={setFile} />
-            </div>
-          </div>
+          <div  className="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500">
+          <label className={labelClassName} htmlFor="fileUpload">Upload Image</label><br />
+          <input type="file" id="fileUpload" name="fileUpload" onChange={handleSubmit} /><br /><br />
+          {fileDisplay && <img src={fileDisplay} alt="Uploaded file" height={"150px"} width={"150px"} />}
+        </div>
         </div>
         <div id="host">
           <div>
@@ -260,14 +284,15 @@ export default function CreateHost() {
                Price ( $ )
             </label>
             <input
-              type="number"
-              className={`${inputClassName} w-1/5`}
-              id="price"
-              placeholder="Enter a price"
-              name="price"
-              value={price}
-              onChange={event => setPrice(event.target.value)}
-            />
+  type="number"
+  className={`${inputClassName} w-1/5`}
+  id="price"
+  placeholder="Enter a price"
+  name="price"
+  value={price}
+  onChange={event => setPrice(Number(event.target.value))}
+/>
+
           </div>
         </div>
         <div>
