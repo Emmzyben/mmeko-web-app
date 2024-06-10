@@ -31,7 +31,7 @@
 }
 #display{
     border:1px solid orange;
-    padding: 20px;text-align: left;
+    padding: 20px;text-align: left;border-radius: 10px;
 }
 #display h2{
     color: white;
@@ -51,7 +51,7 @@ color: white;padding: 15px;background-color: orange;border-radius: 10px;width: 5
     display: flex;flex-direction: row;justify-content: space-evenly;
 }
 #funds{
-    border: 1px solid orange;padding: 20px;margin-top: 30px;height: 300px;
+    border: 1px solid orange;padding: 20px;margin-top: 30px;height: 300px;border-radius: 10px;
 }
 @media screen and (max-width:700px){
     #host{
