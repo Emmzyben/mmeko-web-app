@@ -62,7 +62,7 @@ const Models = () => {
                                         <h2 className='text-gray-500 text-light-orange text-sm'>{host.location}</h2>
                                         <Button className='rounded-lg text-white mt-3 bg-light-orange'>Book Now</Button>
                                     </div>
-                                </div>
+                                    </div>
                             ))
                         ) : (
                             [1, 2, 3, 4, 5, 6, 7, 8].map((item, index) => (
