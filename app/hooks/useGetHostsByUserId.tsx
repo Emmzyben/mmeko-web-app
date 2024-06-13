@@ -30,7 +30,7 @@ const useGetHostsByUserId = async (userId: string) => {
                  weight:doc?.weight,
                  status:doc?.status,
                 created_at: doc?.created_at,
-                imageUrl: doc?.Image_url // Adjusted field name to camelCase
+                imageUrl: doc?.Image_url 
             };
         });
 
