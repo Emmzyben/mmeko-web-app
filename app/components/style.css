@@ -1,11 +1,11 @@
 #host{
     display: flex;
     flex-direction: row;
-    align-items: center;
     justify-content: space-between;
+    flex-wrap: wrap;
 }
 #host>div{
-    width: 49%;
+    width: 48%;margin-top: 10px;
 }
 #top1{
    font-size: 20px; 
@@ -53,6 +53,10 @@ color: white;padding: 15px;background-color: orange;border-radius: 10px;width: 5
 #funds{
     border: 1px solid orange;padding: 20px;margin-top: 30px;height: 300px;border-radius: 10px;
 }
+#table,tr,th,td{
+font-size: 15px;padding: 10px;
+}
+
 @media screen and (max-width:700px){
     #host{
         flex-direction: column;
@@ -61,4 +65,7 @@ color: white;padding: 15px;background-color: orange;border-radius: 10px;width: 5
         width: 100%;
         margin-top: 10px;
     }
+    #table,tr,th,td{
+        font-size: 12px;
+        }
 }

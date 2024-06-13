@@ -2,70 +2,83 @@
 import React, { useState, useEffect } from 'react';
 import useGetHostsByUserId from "../hooks/useGetHostsByUserId";
 import { useUser } from "../context/user";
-import Image from 'next/image';
 import { Button } from '@/components/ui/button';
-
+import "../components/style.css";
 interface Host {
     id: string;
     category: string;
     title: string;
-    name: string;
-    location: string;
-    imageUrl: string;
+    price: number;
+    status: string;
 }
 
 const MyListings = () => {
     const { user } = useUser() ?? { user: null }; // Use the useUser hook to get the user data
     const [userHosts, setUserHosts] = useState<Host[]>([]);
+    const [loading, setLoading] = useState<boolean>(true);
+    const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
         const fetchHosts = async () => {
             if (user) { // Check if the user is available
                 try {
+                    setLoading(true);
                     const hosts = await useGetHostsByUserId(user.id); // Use user.id to fetch hosts
                     setUserHosts(hosts);
+                    setError(null);
                 } catch (error) {
                     console.error('Error fetching user hosts:', error);
+                    setError('Failed to fetch listings.');
+                } finally {
+                    setLoading(false);
                 }
+            } else {
+                setLoading(false);
             }
         };
         fetchHosts();
     }, [user]);
 
+    if (loading) {
+        return <div className='text-gray-500'>Loading...</div>;
+    }
+
+    if (error) {
+        return <div className='text-red-500'>{error}</div>;
+    }
+
     return (
         <div>
-            <h1 className='text-2xl font-bold text-light-orange'>My Listings</h1>
-            <div className='grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mt-5'>
-                {userHosts.length > 0 ? (
-                    userHosts.map((host) => (
-                        <div
-                            key={host.id}
-                            className='shadow-md rounded-lg hover:shadow-lg cursor-pointer hover:shadow-primary hover:scale-105 transition-all ease-in-out'
-                        >
-                            {host.imageUrl && (
-                                <Image
-                                    src={host.imageUrl}
-                                    alt={host.category}
-                                    width={500}
-                                    height={300}
-                                    className='h-[170px] md:h-[200px]  rounded-lg'
-                                />
-                            )}
-                            <div className='flex flex-col items-baseline p-3 gap-1'>
-                                <h2 className='p-1 bg-purple-200 text-light-orange rounded-full px-2 text-[12px]'>
-                                    {host.category}
-                                </h2>
-                                <h2 className='font-bold text-light-orange text-lg'>{host.title}</h2>
-                                <h2 className='text-light-orange'>{host.name}</h2>
-                                <h2 className='text-gray-500 text-light-orange text-sm'>{host.location}</h2>
-                                <Button className='rounded-lg text-white mt-3 bg-light-orange'>Details</Button>
-                            </div>
-                        </div>
-                    ))
-                ) : (
-                    <div className='text-gray-500'>You have no listings.</div>
-                )}
-            </div>
+            <h1 className='text-2xl font-bold text-light-orange mb-5'>My Listings</h1>
+            {userHosts.length > 0 ? (
+             <div style={{overflow:"auto"}}>  
+             <table className='min-w-full divide-y divide-gray-200' id='table'>
+                    <thead className='bg-gray-50'>
+                        <tr>
+                            <th className='  text-left text-xs font-medium text-gray-500 uppercase tracking-wider'>Category</th>
+                            <th className='  text-left text-xs font-medium text-gray-500 uppercase tracking-wider'>Title</th>
+                            <th className='  text-left text-xs font-medium text-gray-500 uppercase tracking-wider'>Price</th>
+                            <th className='  text-left text-xs font-medium text-gray-500 uppercase tracking-wider'>Status</th>
+                            <th className='  text-left text-xs font-medium text-gray-500 uppercase tracking-wider'>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody className='bg-white divide-y divide-gray-200'>
+                        {userHosts.map((host) => (
+                            <tr key={host.id}>
+                                <td className='  whitespace-nowrap'>{host.category}</td>
+                                <td className='  whitespace-nowrap'>{host.title}</td>
+                                <td className='  whitespace-nowrap'>{host.price}</td>
+                                <td className='  whitespace-nowrap'>{host.status}</td>
+                                <td className='  whitespace-nowrap'>
+                                    <Button className='rounded-lg text-white bg-light-orange'>...</Button>
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table></div> 
+            ) : (
+                <div className='text-gray-500'>You have no listings.</div>
+            )}
         </div>
     );
 };

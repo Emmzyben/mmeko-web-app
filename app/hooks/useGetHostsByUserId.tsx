@@ -21,8 +21,14 @@ const useGetHostsByUserId = async (userId: string) => {
                 price: doc?.price,
                 name: doc?.name,
                 location: doc?.location,
-                revisions: doc?.revisions,
-                shortDesc: doc?.shortDesc,
+                age:doc?.age, 
+                bodyType:doc?.bodyType,
+                smoke:doc?.smoke,
+                drink:doc?.drink,
+                interestedIn:doc?.interestedIn,
+                height:doc?.height ,
+                 weight:doc?.weight,
+                 status:doc?.status,
                 created_at: doc?.created_at,
                 imageUrl: doc?.Image_url // Adjusted field name to camelCase
             };

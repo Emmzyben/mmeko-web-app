@@ -1,7 +1,7 @@
 import { database, storage, ID } from "@/libs/AppWriteClient"
 
 const useCreateHost = async (url: string, userId: string, title: string, description: string,categories: string,
-price: Number, name: string, location: string, revisions: string, shortDesc: string,) => {
+price: Number, name: string, location: string, age:Number, bodyType:string, smoke:string, drink:string, interestedIn:string, height:string, weight:string) => {
    
     try {
         await database.createDocument(
@@ -16,8 +16,13 @@ price: Number, name: string, location: string, revisions: string, shortDesc: str
             price: price,
             name: name,
             location: location,
-            revisions: revisions,
-            shortDesc: shortDesc,
+            age:age, 
+            bodyType:bodyType,
+            smoke:smoke,
+            drink:drink,
+            interestedIn:interestedIn,
+            height:height ,
+             weight:weight,
             created_at: new Date().toISOString(),
             Image_url: url,
         });

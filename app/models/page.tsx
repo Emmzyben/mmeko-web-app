@@ -54,11 +54,12 @@ const Models = () => {
                                         />
                                     )}
                                     <div className='flex flex-col items-baseline p-3 gap-1'>
-                                        <h2 className='p-1 bg-purple-200 text-light-orange rounded-full px-2 text-[12px]'>
-                                            {host.categories}
-                                        </h2>
+                                        <button className='p-1 bg-purple-200 text-[white] rounded-full px-2 text-[12px]' style={{backgroundColor:"green"}}>
+                                           Online
+                                        </button>
                                         <h2 className='font-bold text-light-orange text-lg'>{host.categories}</h2>
                                         <h2 className='text-light-orange'>{host.name}</h2>
+                                        <h2 className='text-light-orange'>{host.age}</h2>
                                         <h2 className='text-gray-500 text-light-orange text-sm'>{host.location}</h2>
                                         <Button className='rounded-lg text-white mt-3 bg-light-orange'>Book Now</Button>
                                     </div>
