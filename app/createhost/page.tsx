@@ -1,34 +1,27 @@
 "use client";
-
+import Link from 'next/link';
 import { categoryList } from "@/constants/categories";
 import { useEffect, useState } from "react";
 import useCreateHost from "../hooks/useCreateHost";
 import { useUser } from "../context/user";
 import { useRouter } from "next/navigation";
 import { UploadError } from "../types";
-import { create } from "ipfs-http-client";
+import { Client, Storage } from "appwrite";
 import "../components/style.css";
 
 export default function CreateHost() {
   const inputClassName =
-    "block p-4 w-full text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50  focus:ring-blue-500 focus:border-blue-500";
+    "block p-4 w-full text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500";
   const labelClassName =
-    "mb-2 text-lg font-medium text-gray-900  dark:text-white";
+    "mb-2 text-lg font-medium text-gray-900 dark:text-white";
 
-  const auth =
-    "Basic " +
-    Buffer.from(
-      "2N3HCLyqYPZBgoE268VuFbhb4gd" + ":" + "2348eeac740a001d6a849b64155c48de"
-    ).toString("base64");
+  // Initialize Appwrite client
+  const client = new Client();
+  client
+  .setEndpoint(String(process.env.NEXT_PUBLIC_APPWRITE_URL))
+  .setProject(String(process.env.NEXT_PUBLIC_ENDPOINT));
 
-  const ipfs = create({
-    host: "ipfs.infura.io",
-    port: 5001,
-    protocol: "https",
-    headers: {
-      authorization: auth,
-    },
-  });
+  const storage = new Storage(client);
 
   const [data, setData] = useState({
     title: "",
@@ -47,8 +40,12 @@ export default function CreateHost() {
   });
 
   const handleChange = (e) => {
-    setData({ ...data, [e.target.name]: e.target.value });
+    // Parse the value to an integer for price and age
+    const value = e.target.name === "price" || e.target.name === "age" ? parseInt(e.target.value) : e.target.value;
+    setData({ ...data, [e.target.name]: value });
   };
+  
+  
 
   const contextUser = useUser();
   const router = useRouter();
@@ -65,25 +62,27 @@ export default function CreateHost() {
   const handleSubmit = async (event) => {
     event.preventDefault();
     const file = event.target.files[0];
-
+  
     if (!file) {
       return alert("No files selected");
     }
-
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onloadend = async () => {
-      try {
-        const created = await ipfs.add(file);
-        const URI = `https://ipfs.io/ipfs/${created.cid}`;
-        setUrl(URI);
-        setFileDisplay(URI);
-      } catch (error) {
-        console.error("Error uploading file to IPFS:", error);
-        alert("File upload failed. Please try again.");
-      }
-    };
+  
+    try {
+      const response = await storage.createFile(
+        String(process.env.NEXT_PUBLIC_BUCKET_ID_HOST),
+        'unique()',
+        file
+      );
+      const fileId = response.$id;
+      const fileUrl = `${process.env.NEXT_PUBLIC_APPWRITE_URL}/storage/buckets/${process.env.NEXT_PUBLIC_BUCKET_ID_HOST}/files/${fileId}/view?project=${process.env.NEXT_PUBLIC_ENDPOINT}`;
+      setUrl(fileUrl);
+      setFileDisplay(fileUrl);
+    } catch (error) {
+      console.error("Error uploading file to Appwrite:", error);
+      alert("File upload failed. Please try again.");
+    }
   };
+  
 
   const validate = () => {
     setError(null);
@@ -128,7 +127,7 @@ export default function CreateHost() {
     } else if (!data.weight) {
       setError({ type: "weight", message: "A weight is required" });
       isError = true;
-    }else if (!data.price) {
+    } else if (!data.price) {
       setError({ type: "price", message: "A price is required" });
       isError = true;
     }
@@ -161,7 +160,6 @@ export default function CreateHost() {
         data.weight
       );
       alert("Posting successful!");
-      router.push(`/models/${contextUser?.user?.id}`);
       setIsUploading(false);
     } catch (error) {
       console.log(error);
@@ -169,7 +167,6 @@ export default function CreateHost() {
       alert(error);
     }
   };
-
   return (
     <div className="min-h-[80vh] my-10 mt-0" style={{ padding: "30px" }}>
       <h1 className="text-gray-900 mb-5" id="top1">

@@ -13,9 +13,7 @@ const nextConfig = {
         
     },
     images: {
-        domains: ["ipfs.io"]
-        
-    
+        domains: ["cloud.appwrite.io"]
     }
 }
 
