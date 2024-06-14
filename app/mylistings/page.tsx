@@ -13,17 +13,17 @@ interface Host {
 }
 
 const MyListings = () => {
-    const { user } = useUser() ?? { user: null }; // Use the useUser hook to get the user data
+    const { user } = useUser() ?? { user: null }; 
     const [userHosts, setUserHosts] = useState<Host[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
         const fetchHosts = async () => {
-            if (user) { // Check if the user is available
+            if (user) { 
                 try {
                     setLoading(true);
-                    const hosts = await useGetHostsByUserId(user.id); // Use user.id to fetch hosts
+                    const hosts = await useGetHostsByUserId(user.id); 
                     setUserHosts(hosts);
                     setError(null);
                 } catch (error) {
