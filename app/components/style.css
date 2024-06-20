@@ -74,12 +74,18 @@ font-size: 15px;padding: 10px;
     width: 47%;height: 400px;}
 
     #buttonz{
-        display: flex;flex-direction: column;
+        display: flex;flex-direction: row;justify-content: space-evenly;
+    }#buttonz>button{
+        width: 49%;
     }
-    #buttonz>button{
+    #btn2{
         color: white;padding: 10px;background-color: orange;border-radius: 10px;width: auto;margin-top: 10px;
+        width: 100%;
         }
-        #buttonz>button:hover{
+        #btn1{
+            color: white;padding: 10px;background-color: orange;border-radius: 10px;width: auto;margin-top: 10px;
+            }
+        #btn2:hover{
             background-color: rgb(189, 126, 9);
         }
       #buttonz>  #btn1{

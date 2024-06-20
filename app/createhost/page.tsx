@@ -15,7 +15,7 @@ export default function CreateHost() {
   const labelClassName =
     "mb-2 text-lg font-medium text-gray-900 dark:text-white";
 
-  // Initialize Appwrite client
+
   const client = new Client();
   client
   .setEndpoint(String(process.env.NEXT_PUBLIC_APPWRITE_URL))
@@ -40,7 +40,6 @@ export default function CreateHost() {
   });
 
   const handleChange = (e) => {
-    // Parse the value to an integer for price and age
     const value = e.target.name === "price" || e.target.name === "age" ? parseInt(e.target.value) : e.target.value;
     setData({ ...data, [e.target.name]: value });
   };

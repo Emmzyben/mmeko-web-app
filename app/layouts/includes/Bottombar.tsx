@@ -34,6 +34,8 @@ export default function Bottombar() {
             </Link>
           );
         })}
+    
+
       </div>
     </section>
   );

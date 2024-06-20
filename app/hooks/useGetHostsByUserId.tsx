@@ -16,7 +16,7 @@ const useGetHostsByUserId = async (userId: string) => {
                 id: doc?.$id,
                 userId: doc?.user_id,
                 title: doc?.title,
-                description: doc?.description,
+                description: doc?.description, 
                 category: doc?.categories,
                 price: doc?.price,
                 name: doc?.name,
