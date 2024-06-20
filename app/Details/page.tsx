@@ -148,7 +148,7 @@ const HostDetails = () => {
                         <button className='p-1 bg-purple-200 text-[white] rounded-full px-2 text-[12px]' style={{ backgroundColor: "green" }}> Online</button>
                         <div id='buttonz'>
                             <button id='btn1'>Message</button>
-                            <button onClick={toggleFavourite} id='btn1'>{isFavourite ? 'Remove from Favorites' : 'Add to Favorites'}</button>
+                            <button onClick={toggleFavourite} id='btn1'>{isFavourite ? 'Remove from Crush' : 'Add to Crush'}</button>
                         </div>
                         {hostId && (
                             <Link href={`/book?id=${hostId}`}><button id='btn2'>Book Now</button></Link>
