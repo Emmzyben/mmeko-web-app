@@ -1,15 +1,16 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import { databases, DATABASE_ID, COLLECTION_ID_HOST } from '@/libs/appwriteConfig';
-import { Query } from 'appwrite';
-import CategoryList from '../components/CategoryList';
-import Hero from '../components/Hero';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
-import useCreateHostBucketUrl from '../hooks/useCreateHostBucketUrl';
 import useGetProfileStatusByUserId from '../hooks/useGetProfileStatusByUserId';
+
+// Dynamic imports with no SSR
+const CategoryList = dynamic(() => import('../components/CategoryList'), { ssr: false });
+const Hero = dynamic(() => import('../components/Hero'), { ssr: false });
 
 const Models = () => {
     const [hosts, setHosts] = useState<any[]>([]);
