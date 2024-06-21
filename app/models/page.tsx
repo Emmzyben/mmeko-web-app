@@ -9,6 +9,7 @@ import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import useCreateHostBucketUrl from '../hooks/useCreateHostBucketUrl';
 import useGetProfileStatusByUserId from '../hooks/useGetProfileStatusByUserId';
+import { useSearchParams } from 'react-router-dom'; // Assuming useSearchParams() is imported from react-router-dom
 
 const Models = () => {
     const [hosts, setHosts] = useState<any[]>([]);
