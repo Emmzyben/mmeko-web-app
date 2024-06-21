@@ -1,3 +1,4 @@
+"use client"
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { databases, DATABASE_ID, COLLECTION_ID_HOST } from '@/libs/appwriteConfig';
