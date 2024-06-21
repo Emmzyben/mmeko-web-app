@@ -1,5 +1,5 @@
 "use client"
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
 import { databases, DATABASE_ID, COLLECTION_ID_HOST } from '@/libs/appwriteConfig';
 import { Query } from 'appwrite';
@@ -67,32 +67,34 @@ const Models = () => {
                     ) : null}
                     <div className='grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mt-5 '>
                         {hosts.map((hostItem) => (
-                            <Link key={hostItem.$id} href={`/Details?id=${hostItem.$id}`}>
-                                <div className='shadow-md rounded-lg hover:shadow-lg cursor-pointer hover:shadow-primary hover:scale-105 transition-all ease-in-out'>
-                                    {hostItem.Image_url && (
-                                        <Image
-                                            src={hostItem.Image_url}
-                                            alt={hostItem.categories}
-                                            width={500}
-                                            height={300}
-                                            className='h-[170px] md:h-[200px]  rounded-lg'
-                                        />
-                                    )}
-                                    <div className='flex flex-col items-baseline p-3 gap-1'>
-                                        <button 
-                                            className='p-1 text-[white] rounded-full px-2 text-[12px]' 
-                                            style={{ backgroundColor: statuses[hostItem.user_id] === 'online' ? "green" : "red" }}
-                                        >
-                                            {statuses[hostItem.user_id] === 'online' ? 'Online' : 'Offline'}
-                                        </button>
-                                        <h2 className='font-bold text-light-orange text-lg'>{hostItem.categories}</h2>
-                                        <h2 className='text-light-orange'>{hostItem.name}</h2>
-                                        <h2 className='text-light-orange'>{hostItem.age}</h2>
-                                        <h2 className='text-gray-500 text-light-orange text-sm'>{hostItem.location}</h2>
-                                        <Button className='rounded-lg text-white mt-3 bg-light-orange'>Book Now</Button>
+                            <Suspense key={hostItem.$id} fallback={<div>Loading...</div>}>
+                                <Link href={`/Details?id=${hostItem.$id}`}>
+                                    <div className='shadow-md rounded-lg hover:shadow-lg cursor-pointer hover:shadow-primary hover:scale-105 transition-all ease-in-out'>
+                                        {hostItem.Image_url && (
+                                            <Image
+                                                src={hostItem.Image_url}
+                                                alt={hostItem.categories}
+                                                width={500}
+                                                height={300}
+                                                className='h-[170px] md:h-[200px]  rounded-lg'
+                                            />
+                                        )}
+                                        <div className='flex flex-col items-baseline p-3 gap-1'>
+                                            <button 
+                                                className='p-1 text-[white] rounded-full px-2 text-[12px]' 
+                                                style={{ backgroundColor: statuses[hostItem.user_id] === 'online' ? "green" : "red" }}
+                                            >
+                                                {statuses[hostItem.user_id] === 'online' ? 'Online' : 'Offline'}
+                                            </button>
+                                            <h2 className='font-bold text-light-orange text-lg'>{hostItem.categories}</h2>
+                                            <h2 className='text-light-orange'>{hostItem.name}</h2>
+                                            <h2 className='text-light-orange'>{hostItem.age}</h2>
+                                            <h2 className='text-gray-500 text-light-orange text-sm'>{hostItem.location}</h2>
+                                            <Button className='rounded-lg text-white mt-3 bg-light-orange'>Book Now</Button>
+                                        </div>
                                     </div>
-                                </div>
-                            </Link>
+                                </Link>
+                            </Suspense>
                         ))}
                     </div>
                 </div>
