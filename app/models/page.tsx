@@ -7,7 +7,6 @@ import CategoryList from '../components/CategoryList';
 import Hero from '../components/Hero';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
-import useCreateHostBucketUrl from '../hooks/useCreateHostBucketUrl';
 import useGetProfileStatusByUserId from '../hooks/useGetProfileStatusByUserId';
 
 const Models = () => {
@@ -25,7 +24,6 @@ const Models = () => {
             const response = await databases.listDocuments(DATABASE_ID, COLLECTION_ID_HOST);
             const allHosts = response.documents;
 
-            // Fetch statuses for all hosts
             const statusPromises = allHosts.map(async (host: any) => {
                 const status = await useGetProfileStatusByUserId(host.user_id);
                 return { user_id: host.user_id, status };
@@ -38,14 +36,14 @@ const Models = () => {
             });
             setStatuses(statusMap);
 
-            // Sort hosts by online status
+           
             allHosts.sort((a, b) => {
                 const statusA = statusMap[a.user_id] || 'offline';
                 const statusB = statusMap[b.user_id] || 'offline';
                 return statusA === 'online' ? -1 : 1;
             });
 
-            // Pagination
+         
             const indexOfLastHost = currentPage * hostsPerPage;
             const indexOfFirstHost = indexOfLastHost - hostsPerPage;
             const currentHosts = allHosts.slice(indexOfFirstHost, indexOfLastHost);
