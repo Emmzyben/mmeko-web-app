@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import React, { useState, useEffect } from 'react';
 import { useUser } from "../context/user";
 import getFavouriteHostsForUser from '../hooks/getFavouritesForUser';
@@ -9,7 +9,7 @@ import "../components/style.css";
 
 interface Host {
     id: string;
-    user_id:string;
+    user_id: string;
     title: string;
     Image_url: string;
     categories: string;
@@ -30,30 +30,48 @@ const FavouriteHosts = () => {
     const { user } = useUser() ?? { user: null };
     const [favouriteHosts, setFavouriteHosts] = useState<Host[]>([]);
     const [statuses, setStatuses] = useState<{ [key: string]: string }>({});
+    const [currentPage, setCurrentPage] = useState(1);
+    const hostsPerPage = 16;
 
     useEffect(() => {
         const fetchFavouriteHosts = async () => {
             if (user?.id) {
                 const hosts = await getFavouriteHostsForUser(user.id);
-                setFavouriteHosts(hosts);
-                
                 // Fetch and set statuses for each host
+                const statusPromises = hosts.map(async (host) => {
+                    const status = await useGetProfileStatusByUserId(host.user_id);
+                    return { ...host, status: status || 'offline' };
+                });
+                const hostsWithStatus = await Promise.all(statusPromises);
+                // Sort hosts by their online status
+                hostsWithStatus.sort((a, b) => (a.status === 'online' ? -1 : 1));
+                setFavouriteHosts(hostsWithStatus);
+
                 const statusMap: { [key: string]: string } = {};
-                for (const host of hosts) {
-                    try {
-                        const status = await useGetProfileStatusByUserId(host.user_id);
-                        statusMap[host.user_id] = status || 'offline';
-                    } catch (error) {
-                        console.error(`Error fetching status for host ${host.id}:`, error);
-                        statusMap[host.user_id] = 'offline'; // Set status to offline in case of error
-                    }
-                }
+                hostsWithStatus.forEach(({ user_id, status }) => {
+                    statusMap[user_id] = status;
+                });
                 setStatuses(statusMap);
             }
         };
-        
         fetchFavouriteHosts();
     }, [user]);
+
+    const indexOfLastHost = currentPage * hostsPerPage;
+    const indexOfFirstHost = indexOfLastHost - hostsPerPage;
+    const currentHosts = favouriteHosts.slice(indexOfFirstHost, indexOfLastHost);
+
+    const paginateNext = () => {
+        if (currentPage < Math.ceil(favouriteHosts.length / hostsPerPage)) {
+            setCurrentPage(currentPage + 1);
+        }
+    };
+
+    const paginatePrevious = () => {
+        if (currentPage > 1) {
+            setCurrentPage(currentPage - 1);
+        }
+    };
 
     if (!user) {
         return <div>Please log in to see your favourite hosts.</div>;
@@ -63,9 +81,9 @@ const FavouriteHosts = () => {
         <div className='mt-5'>
             <h1 className='font-bold text-[22px] text-light-orange'>My Crush List</h1>
             <div className='grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mt-5'>
-                {favouriteHosts.length > 0 ? (
-                    favouriteHosts.map((hostItem) => (
-                        <Link key={hostItem.id} href={`/Details?id=${hostItem.id}`}>
+                {currentHosts.length > 0 ? (
+                    currentHosts.map((hostItem, index) => (
+                        <Link key={index} href={`/Details?id=${hostItem.id}`}>
                             <div className='shadow-md rounded-lg hover:shadow-lg cursor-pointer hover:shadow-primary hover:scale-105 transition-all ease-in-out'>
                                 {hostItem.Image_url && (
                                     <Image
@@ -87,7 +105,7 @@ const FavouriteHosts = () => {
                                     <h2 className='text-light-orange'>{hostItem.name}</h2>
                                     <h2 className='text-light-orange'>{hostItem.age}</h2>
                                     <h2 className='text-gray-500 text-light-orange text-sm'>{hostItem.location}</h2>
-                                    <button className='rounded-lg text-white mt-3 bg-light-orange'>Book Now</button>
+                                    <button style={{padding:"10px"}} className='rounded-lg text-white mt-3 bg-light-orange'>Book Now</button>
                                 </div>
                             </div>
                         </Link>
@@ -96,10 +114,26 @@ const FavouriteHosts = () => {
                     [1, 2, 3, 4, 5, 6, 7, 8].map((item, index) => (
                         <div
                             key={index}
-                            className='w-full h-[300px] bg-dark-5 rounded-lg animate-pulse'
+                            className='w-full h-[300px] bg-dark-5 rounded-lg animate-pulse text-white'
                         ></div>
                     ))
                 )}
+            </div>
+            <div className="mt-5 flex justify-left gap-2">
+                <button
+                    onClick={paginatePrevious}
+                    disabled={currentPage === 1}
+                    className='px-4 py-2 text-white rounded disabled:opacity-50'
+                >
+                    Previous
+                </button>
+                <button
+                    onClick={paginateNext}
+                    disabled={currentPage === Math.ceil(favouriteHosts.length / hostsPerPage)}
+                    className='px-4 py-2 text-white rounded disabled:opacity-50'
+                >
+                    Next
+                </button>
             </div>
         </div>
     );
