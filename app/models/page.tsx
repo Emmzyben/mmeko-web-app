@@ -1,4 +1,5 @@
-"use client"
+'use client';
+
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { databases, DATABASE_ID, COLLECTION_ID_HOST } from '@/libs/appwriteConfig';
@@ -7,6 +8,7 @@ import CategoryList from '../components/CategoryList';
 import Hero from '../components/Hero';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
+import useCreateHostBucketUrl from '../hooks/useCreateHostBucketUrl';
 import useGetProfileStatusByUserId from '../hooks/useGetProfileStatusByUserId';
 
 const Models = () => {
@@ -24,6 +26,7 @@ const Models = () => {
             const response = await databases.listDocuments(DATABASE_ID, COLLECTION_ID_HOST);
             const allHosts = response.documents;
 
+            // Fetch statuses for all hosts
             const statusPromises = allHosts.map(async (host: any) => {
                 const status = await useGetProfileStatusByUserId(host.user_id);
                 return { user_id: host.user_id, status };
@@ -36,14 +39,14 @@ const Models = () => {
             });
             setStatuses(statusMap);
 
-           
+            // Sort hosts by online status
             allHosts.sort((a, b) => {
                 const statusA = statusMap[a.user_id] || 'offline';
                 const statusB = statusMap[b.user_id] || 'offline';
                 return statusA === 'online' ? -1 : 1;
             });
 
-         
+            // Pagination
             const indexOfLastHost = currentPage * hostsPerPage;
             const indexOfFirstHost = indexOfLastHost - hostsPerPage;
             const currentHosts = allHosts.slice(indexOfFirstHost, indexOfLastHost);
@@ -73,7 +76,7 @@ const Models = () => {
                                             alt={hostItem.categories}
                                             width={500}
                                             height={300}
-                                            className='h-[170px] md:h-[200px]  rounded-lg'
+                                            className='h-[170px] md:h-[200px] rounded-lg'
                                         />
                                     )}
                                     <div className='flex flex-col items-baseline p-3 gap-1'>
