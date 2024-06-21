@@ -1,13 +1,15 @@
-"use client";
+"use client"
 import React, { useState, useEffect } from 'react';
 import { useUser } from "../context/user";
 import getFavouriteHostsForUser from '../hooks/getFavouritesForUser';
 import Image from 'next/image';
 import Link from 'next/link';
+import useGetProfileStatusByUserId from '../hooks/useGetProfileStatusByUserId';
 import "../components/style.css";
 
 interface Host {
     id: string;
+    user_id:string;
     title: string;
     Image_url: string;
     categories: string;
@@ -27,14 +29,29 @@ interface Host {
 const FavouriteHosts = () => {
     const { user } = useUser() ?? { user: null };
     const [favouriteHosts, setFavouriteHosts] = useState<Host[]>([]);
+    const [statuses, setStatuses] = useState<{ [key: string]: string }>({});
 
     useEffect(() => {
         const fetchFavouriteHosts = async () => {
             if (user?.id) {
                 const hosts = await getFavouriteHostsForUser(user.id);
                 setFavouriteHosts(hosts);
+                
+                // Fetch and set statuses for each host
+                const statusMap: { [key: string]: string } = {};
+                for (const host of hosts) {
+                    try {
+                        const status = await useGetProfileStatusByUserId(host.user_id);
+                        statusMap[host.user_id] = status || 'offline';
+                    } catch (error) {
+                        console.error(`Error fetching status for host ${host.id}:`, error);
+                        statusMap[host.user_id] = 'offline'; // Set status to offline in case of error
+                    }
+                }
+                setStatuses(statusMap);
             }
         };
+        
         fetchFavouriteHosts();
     }, [user]);
 
@@ -44,9 +61,7 @@ const FavouriteHosts = () => {
 
     return (
         <div className='mt-5'>
-            {favouriteHosts.length > 0 && (
-                <h2 className='font-bold text-[22px]'>{favouriteHosts[0].title}</h2>
-            )}
+            <h1 className='font-bold text-[22px] text-light-orange'>My Crush List</h1>
             <div className='grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mt-5'>
                 {favouriteHosts.length > 0 ? (
                     favouriteHosts.map((hostItem) => (
@@ -62,14 +77,17 @@ const FavouriteHosts = () => {
                                     />
                                 )}
                                 <div className='flex flex-col items-baseline p-3 gap-1'>
-                                    <button className='p-1 bg-purple-200 text-[white] rounded-full px-2 text-[12px]' style={{ backgroundColor: "green" }}>
-                                        Online
+                                    <button 
+                                        className='p-1 text-[white] rounded-full px-2 text-[12px]' 
+                                        style={{ backgroundColor: statuses[hostItem.user_id] === 'online' ? "green" : "red" }}
+                                    >
+                                        {statuses[hostItem.user_id] === 'online' ? 'Online' : 'Offline'}
                                     </button>
                                     <h2 className='font-bold text-light-orange text-lg'>{hostItem.categories}</h2>
                                     <h2 className='text-light-orange'>{hostItem.name}</h2>
                                     <h2 className='text-light-orange'>{hostItem.age}</h2>
                                     <h2 className='text-gray-500 text-light-orange text-sm'>{hostItem.location}</h2>
-                                    <button style={{padding:'10px'}} className='rounded-lg text-white mt-3 bg-light-orange'>Book Now</button>
+                                    <button className='rounded-lg text-white mt-3 bg-light-orange'>Book Now</button>
                                 </div>
                             </div>
                         </Link>

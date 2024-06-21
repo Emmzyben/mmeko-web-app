@@ -1,18 +1,19 @@
-import { database } from "@/libs/AppWriteClient"
+import { database } from "@/libs/AppWriteClient";
+const DATABASE_ID = '6647001200115f436fbf';
+const COLLECTION_ID_PROFILE = '66470137001632d54f1d';
 
-const useUpdateProfile = async (id: string, name: string, bio: string) => {
-    try {
-        await database.updateDocument(
-            String(process.env.NEXT_PUBLIC_DATABASE_ID), 
-            String(process.env.NEXT_PUBLIC_COLLECTION_ID_PROFILE), 
-            id, 
-        {
-            name: name,
-            bio: bio,
-        });
-    } catch (error) {
-        throw error
-    }
-}
+const useUpdateProfile = async (id: string, data: { [key: string]: any }) => {
+  try {
+    await database.updateDocument(
+      DATABASE_ID,
+      COLLECTION_ID_PROFILE,
+      id,
+      data
+    );
+  } catch (error) {
+    console.error("Failed to update profile:", error);
+    throw error;
+  }
+};
 
-export default useUpdateProfile
+export default useUpdateProfile;

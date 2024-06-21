@@ -2,6 +2,7 @@ import { database, Query } from "@/libs/AppWriteClient";
 
 interface Host {
     id: string;
+    user_id:string;
     title: string;
     Image_url: string;
     categories: string;
@@ -49,6 +50,7 @@ const getHostsByHostIds = async (hostIds: string[]): Promise<Host[]> => {
         const hosts = await Promise.all(hostPromises);
         const mappedHosts: Host[] = hosts.map(host => ({
             id: host.$id,
+            user_id:host.user_id,
             title: host.title,
             Image_url: host.Image_url,
             categories: host.categories,

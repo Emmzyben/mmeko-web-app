@@ -8,9 +8,11 @@ import Link from 'next/link';
 import { useUser } from "../context/user";
 import useCreateFavourite from '../hooks/useCreatefavourite';
 import useRemoveFavourite from '../hooks/useRemovefavourite';
+import useGetProfileStatusByUserId from '../hooks/useGetProfileStatusByUserId';
 import "../components/style.css";
 
 interface Host {
+    user_id: string;
     title: string;
     Image_url: string;
     categories: string;
@@ -33,6 +35,7 @@ const HostDetails = () => {
     const [host, setHost] = useState<Host | null>(null);
     const [hostId, setHostId] = useState<string | null>(null);
     const [isFavourite, setIsFavourite] = useState<boolean>(false);
+    const [status, setStatus] = useState<string>('offline');
 
     useEffect(() => {
         const queryParams = new URLSearchParams(window.location.search);
@@ -51,6 +54,10 @@ const HostDetails = () => {
             const response = await databases.getDocument(DATABASE_ID, COLLECTION_ID_HOST, hostId);
             const hostData = mapDocumentToHost(response);
             setHost(hostData);
+
+            // Fetch status for the host's user_id
+            const hostStatus = await useGetProfileStatusByUserId(response.user_id);
+            setStatus(hostStatus || 'offline');
         } catch (error) {
             console.error('Error fetching host details:', error);
         }
@@ -63,8 +70,8 @@ const HostDetails = () => {
                 DATABASE_ID,
                 COLLECTION_ID_FAVOURITES,
                 [
-                    Query.equal('user_id', userId.substring(0, 25)),
-                    Query.equal('host_id', hostId.substring(0, 25)),
+                    Query.equal('user_id', userId),
+                    Query.equal('host_id', hostId),
                 ]
             );
             setIsFavourite(response.documents.length > 0);
@@ -95,6 +102,7 @@ const HostDetails = () => {
 
     const mapDocumentToHost = (document: any): Host => {
         return {
+            user_id: document.user_id,
             title: document.title,
             Image_url: document.Image_url,
             categories: document.categories,
@@ -145,7 +153,12 @@ const HostDetails = () => {
                     </div>
                     <br />
                     <div>
-                        <button className='p-1 bg-purple-200 text-[white] rounded-full px-2 text-[12px]' style={{ backgroundColor: "green" }}> Online</button>
+                        <button 
+                            className='p-1 bg-purple-200 text-[white] rounded-full px-2 text-[12px]' 
+                            style={{ backgroundColor: status === 'online' ? "green" : "red" }}
+                        >
+                            {status === 'online' ? 'Online' : 'Offline'}
+                        </button>
                         <div id='buttonz'>
                             <button id='btn1'>Message</button>
                             <button onClick={toggleFavourite} id='btn1'>{isFavourite ? 'Remove from Crush' : 'Add to Crush'}</button>

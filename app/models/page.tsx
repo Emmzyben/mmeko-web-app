@@ -1,28 +1,42 @@
 "use client"
 import React, { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
-import client, { databases, DATABASE_ID, COLLECTION_ID_HOST } from '@/libs/appwriteConfig';
-import { ID, Query, Permission, Role } from 'appwrite';
+import { databases, DATABASE_ID, COLLECTION_ID_HOST } from '@/libs/appwriteConfig';
+import { Query } from 'appwrite';
 import CategoryList from '../components/CategoryList';
 import Hero from '../components/Hero';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import useCreateHostBucketUrl from '../hooks/useCreateHostBucketUrl';
+import useGetProfileStatusByUserId from '../hooks/useGetProfileStatusByUserId';
 
 const Models = () => {
-    const [host, setHost] = useState<any>([]);
+    const [hosts, setHosts] = useState<any[]>([]);
+    const [statuses, setStatuses] = useState<{ [key: string]: string }>({});
 
     useEffect(() => {
-        getHost();
+        getHosts();
     }, []);
 
-    const getHost = async () => {
+    const getHosts = async () => {
         try {
             const response = await databases.listDocuments(DATABASE_ID, COLLECTION_ID_HOST);
-            console.log('RESPONSE:', response);
-            setHost(response.documents);
+            setHosts(response.documents);
+
+            // Fetch statuses for all hosts
+            const statusPromises = response.documents.map(async (host: any) => {
+                const status = await useGetProfileStatusByUserId(host.user_id);
+                return { user_id: host.user_id, status };
+            });
+
+            const statuses = await Promise.all(statusPromises);
+            const statusMap: { [key: string]: string } = {};
+            statuses.forEach(({ user_id, status }) => {
+                statusMap[user_id] = status || 'offline';
+            });
+            setStatuses(statusMap);
         } catch (error) {
-            console.error('Error fetching hosts:', error);
+            console.error('Error fetching hosts or statuses:', error);
         }
     };
 
@@ -34,12 +48,12 @@ const Models = () => {
                     <CategoryList />
                 </Suspense>
                 <div className='mt-5'>
-                    {host.length > 0 ? (
-                        <h2 className='font-bold text-[22px]'>{host[0].title}</h2>
+                    {hosts.length > 0 ? (
+                        <h2 className='font-bold text-[22px]'>{hosts[0].title}</h2>
                     ) : null}
                     <div className='grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mt-5 '>
-                        {host.length > 0 ? (
-                            host.map((hostItem) => (
+                        {hosts.length > 0 ? (
+                            hosts.map((hostItem) => (
                                 <Link key={hostItem.$id} href={`/Details?id=${hostItem.$id}`}>
                                     <div className='shadow-md rounded-lg hover:shadow-lg cursor-pointer hover:shadow-primary hover:scale-105 transition-all ease-in-out'>
                                         {hostItem.Image_url && (
@@ -52,8 +66,11 @@ const Models = () => {
                                             />
                                         )}
                                         <div className='flex flex-col items-baseline p-3 gap-1'>
-                                            <button className='p-1 bg-purple-200 text-[white] rounded-full px-2 text-[12px]' style={{backgroundColor:"green"}}>
-                                                Online
+                                            <button 
+                                                className='p-1 text-[white] rounded-full px-2 text-[12px]' 
+                                                style={{ backgroundColor: statuses[hostItem.user_id] === 'online' ? "green" : "red" }}
+                                            >
+                                                {statuses[hostItem.user_id] === 'online' ? 'Online' : 'Offline'}
                                             </button>
                                             <h2 className='font-bold text-light-orange text-lg'>{hostItem.categories}</h2>
                                             <h2 className='text-light-orange'>{hostItem.name}</h2>
