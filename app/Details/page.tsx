@@ -1,4 +1,4 @@
-"use client";
+"use client"
 import React, { useState, useEffect } from 'react';
 import client, { databases, DATABASE_ID, COLLECTION_ID_HOST, COLLECTION_ID_FAVOURITES } from '@/libs/appwriteConfig';
 import { useRouter } from "next/navigation";
@@ -9,6 +9,7 @@ import { useUser } from "../context/user";
 import useCreateFavourite from '../hooks/useCreatefavourite';
 import useRemoveFavourite from '../hooks/useRemovefavourite';
 import useGetProfileStatusByUserId from '../hooks/useGetProfileStatusByUserId';
+import useBookHost from '../hooks/useBookHost';
 import "../components/style.css";
 
 interface Host {
@@ -36,6 +37,7 @@ const HostDetails = () => {
     const [hostId, setHostId] = useState<string | null>(null);
     const [isFavourite, setIsFavourite] = useState<boolean>(false);
     const [status, setStatus] = useState<string>('offline');
+    const { bookHost, loading, error } = useBookHost();
 
     useEffect(() => {
         const queryParams = new URLSearchParams(window.location.search);
@@ -97,6 +99,12 @@ const HostDetails = () => {
             } catch (error) {
                 console.error('Error adding to favorites:', error);
             }
+        }
+    };
+
+    const handleBookNow = async () => {
+        if (host && user?.id) {
+            await bookHost(hostId!, user.id, host.user_id, host.name, host.categories, host.price);
         }
     };
 
@@ -164,7 +172,9 @@ const HostDetails = () => {
                             <button onClick={toggleFavourite} id='btn1'>{isFavourite ? 'Remove from Crush' : 'Add to Crush'}</button>
                         </div>
                         {hostId && (
-                            <Link href={`/book?id=${hostId}`}><button id='btn2'>Book Now</button></Link>
+                            <button id='btn2' onClick={handleBookNow} disabled={loading}>
+                                {loading ? 'Processing...' : 'Book Now'}
+                            </button>
                         )}
                     </div>
                 </div>
@@ -173,6 +183,7 @@ const HostDetails = () => {
                 <h1><strong>Title:</strong> {host.title}</h1>
                 <p><strong>Description:</strong> {host.description}</p>
             </div>
+            {error && <p className="error">{error}</p>}
         </div>
     );
 };
