@@ -12,7 +12,7 @@ import { FaRegBookmark, FaRegHeart } from "react-icons/fa";
 import { FiLogOut } from "react-icons/fi";
 import { LuLayoutList } from "react-icons/lu";
 
-export default function ModelPageTopbar() {
+export default function Topwallet() {
   const userContext = useUser();
   const router = useRouter();
   const [showMenu, setShowMenu] = useState<boolean>(false);
@@ -30,9 +30,9 @@ export default function ModelPageTopbar() {
   return (
     <>
       <nav className='topbar'>
-        <Link href='/models' className='flex items-center gap-4'>
-          <Image src='/assets/Models.jpg' alt='logo' width={115} height={115} />
-        </Link>
+      <Link href='/' className='flex items-center gap-4'>
+        <Image src='/assets/gold.jpg' alt='logo' width={115} height={115} />
+      </Link>
 
         {!userContext?.user?.id ? (
           <div className="flex items-center">

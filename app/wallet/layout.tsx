@@ -3,7 +3,7 @@
 
 import { Inter } from "next/font/google";
 import "../globals.css";
-import ModelPageTopbar from "../layouts/includes/ModelPageTopbar";
+import Topwallet from "../layouts/includes/Topwallet";
 import Bottombar from "../layouts/includes/Bottombar";
 import LeftSidebar from "../layouts/includes/LeftSidebar";
 
@@ -20,7 +20,7 @@ export default function RootLayout({
     <>
     <html lang="en">
       <body className={`${inter.className} bg-dark-1`}>
-      <ModelPageTopbar/>
+      <Topwallet/>
       
       <main className='flex flex-row'>
             <LeftSidebar />

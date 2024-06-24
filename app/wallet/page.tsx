@@ -30,8 +30,8 @@ export default function wallet() {
       </div>
      
 <div id="buttons">
-  <button>Deposit</button>
-<button style={{backgroundColor:"red"}}>Withdraw</button>
+  <button>Buy Gold</button>
+<button style={{backgroundColor:"red"}}>Convert</button>
 </div>
   
 <div id="funds">

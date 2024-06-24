@@ -80,7 +80,7 @@ export default function Topbar() {
                                                 className="flex items-center w-full justify-start py-3 px-2 hover:bg-dark-5 cursor-pointer"
                                             >
                                                 <BiUser size="20" className="text-zinc"/>
-                                                <span className="pl-2 font-semibold text-zinc text-sm">My Wallet</span>
+                                                <span className="pl-2 font-semibold text-zinc text-sm">My Vault</span>
                                             </button>
                                             
                                             <button 
