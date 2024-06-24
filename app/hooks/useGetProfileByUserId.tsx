@@ -23,3 +23,4 @@ const useGetProfileByUserId = async (userId: string) => {
 }
 
 export default useGetProfileByUserId
+

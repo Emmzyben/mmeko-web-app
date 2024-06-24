@@ -21,7 +21,7 @@ const COLLECTION_ID_PROFILE = '66470137001632d54f1d';
 
 const EditProfileOverlay = () => {
     const { currentProfile, setCurrentProfile } = useProfileStore();
-    const { setIsEditProfileOpen } = useGeneralStore();
+    const { setIsEditProfileOpen, isEditProfileOpen } = useGeneralStore();
 
     const contextUser = useUser();
     const router = useRouter();
@@ -213,13 +213,9 @@ const EditProfileOverlay = () => {
                         {!uploadedImage ? (
                             <div id="UpdateInfoButtons" className="flex items-center justify-end">
 
-                                <button 
-                                    disabled={isUpdating}
-                                    onClick={() => setIsEditProfileOpen(false)}
-                                    className="flex items-center border border-zinc rounded-sm px-3 py-[6px] hover:bg-zinc bg-gray-400"
-                                >
-                                    <span className="px-2 font-medium text-[15px]">Cancel</span>
-                                </button>
+            <button disabled={isUpdating} onClick={() => setIsEditProfileOpen(false)} className="hover:bg-gray-500 text-dark-5 p-1 rounded-full">
+                        <AiOutlineClose size="25"/>
+                    </button>
 
                                 <button 
                                     disabled={isUpdating}

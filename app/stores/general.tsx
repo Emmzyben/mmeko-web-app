@@ -23,8 +23,8 @@ export const useGeneralStore = create<GeneralStore>()(
                 setIsLoginOpen: (val: boolean) => set({ isLoginOpen: val }),
                 setIsEditProfileOpen: (val: boolean) => set({ isEditProfileOpen: val }),
                 setRandomUsers: async () => {
-                    const result = await useGetRandomUsers()
-                    set({ randomUsers: result })
+                    const result = await useGetRandomUsers();
+                    set({ randomUsers: result });
                 },
             }),
             { 
@@ -33,4 +33,4 @@ export const useGeneralStore = create<GeneralStore>()(
             }
         )
     )
-)
+);
