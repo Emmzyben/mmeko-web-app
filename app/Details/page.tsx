@@ -1,4 +1,5 @@
-"use client"
+"use client";
+
 import React, { useState, useEffect } from 'react';
 import client, { databases, DATABASE_ID, COLLECTION_ID_HOST, COLLECTION_ID_FAVOURITES } from '@/libs/appwriteConfig';
 import { useRouter } from "next/navigation";
@@ -37,7 +38,7 @@ const HostDetails = () => {
     const [hostId, setHostId] = useState<string | null>(null);
     const [isFavourite, setIsFavourite] = useState<boolean>(false);
     const [status, setStatus] = useState<string>('offline');
-    const { bookHost, loading, error } = useBookHost();
+    const { bookHost, loading, error, success } = useBookHost();
 
     useEffect(() => {
         const queryParams = new URLSearchParams(window.location.search);
@@ -159,11 +160,11 @@ const HostDetails = () => {
                         <p><strong>Location:</strong> {host.location}</p>
                         <p><strong>Price:</strong> {host.price} Gold</p>
                         <p><strong>Body Type:</strong> {host.bodyType}</p>
-                        <p><strong>Smoker:</strong> {host.smoke}</p>
-                        <p><strong>Drinker:</strong> {host.drink}</p>
-                        <p><strong>Interested In:</strong> {host.interestedIn}</p>
-                        <p><strong>Height:</strong> {host.height}</p>
-                        <p><strong>Weight:</strong> {host.weight}</p>
+                        <p><strong>Smoke:</strong> {host.smoke ? 'Yes' : 'No'}</p>
+                        <p><strong>Drink:</strong> {host.drink ? 'Yes' : 'No'}</p>
+                        <p><strong>Interested In:</strong> {host.interestedIn.join(', ')}</p>
+                        <p><strong>Height:</strong> {host.height} cm</p>
+                        <p><strong>Weight:</strong> {host.weight} kg</p>
                     </div>
                     <br />
                     <div>
@@ -175,22 +176,21 @@ const HostDetails = () => {
                         </button>
                         <div id='buttonz'>
                             <button id='btn1'>Message</button>
-                            <button onClick={toggleFavourite} id='btn1'>{isFavourite ? 'Remove from Favourites' : 'Add to Favourites'}</button>
+                            <button onClick={toggleFavourite} id='btn1'>{isFavourite ? 'Remove from Crush' : 'Add to Crush'}</button>
                         </div>
                         {hostId && (
                             <button id='btn2' onClick={handleBookNow} disabled={loading}>
                                 {loading ? 'Processing...' : 'Book Now'}
                             </button>
                         )}
-                        {error && <p style={{ color: 'red' }}>{error}</p>}
+                        {error && <p style={{ color: 'red' ,textAlign:'center'}}>{error}</p>}
+                        {success && <p style={{ color: 'green',textAlign:'center' }}>{success}</p>}
                     </div>
                 </div>
             </div>
             <div style={{ marginTop: "20px" }}>
-                <h1><strong>Title:</strong> {host.title}</h1>
                 <p><strong>Description:</strong> {host.description}</p>
             </div>
-            
         </div>
     );
 };

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { database, Query } from "@/libs/AppWriteClient"
+import { database, Query } from "@/libs/AppWriteClient";
 import { ID } from 'appwrite';
 import { useRouter } from "next/navigation";
 import { DATABASE_ID, COLLECTION_ID_BOOKINGS, COLLECTION_ID_PROFILE } from '@/libs/appwriteConfig';
@@ -7,17 +7,18 @@ import { DATABASE_ID, COLLECTION_ID_BOOKINGS, COLLECTION_ID_PROFILE } from '@/li
 const useBookHost = () => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [success, setSuccess] = useState<string | null>(null);
     const router = useRouter();
 
     const bookHost = async (hostId: string, hostName: string, category: string, price: number, hostUserId: string, userId: string) => {
         setLoading(true);
         setError(null);
+        setSuccess(null);
 
         try {
             const profilesResponse = await database.listDocuments(DATABASE_ID, COLLECTION_ID_PROFILE);
             const profiles = profilesResponse.documents;
 
-         
             const user = profiles.find(profile => profile.user_id === userId);
             const host = profiles.find(profile => profile.user_id === hostUserId);
 
@@ -25,12 +26,10 @@ const useBookHost = () => {
                 throw new Error('User or host profile not found');
             }
 
-          
             if (user.balance < price) {
                 throw new Error('Insufficient balance to book host');
             }
 
-        
             const bookingId = ID.unique();
             const bookingData = {
                 hostId,
@@ -42,11 +41,9 @@ const useBookHost = () => {
             };
             await database.createDocument(DATABASE_ID, COLLECTION_ID_BOOKINGS, bookingId, bookingData);
 
-           
             const userNewBalance = user.balance - price;
             const hostNewBalance = Math.floor(host.balance + (price * 0.7)); 
 
-        
             await database.updateDocument(DATABASE_ID, COLLECTION_ID_PROFILE, user.$id, {
                 balance: userNewBalance,
             });
@@ -59,7 +56,7 @@ const useBookHost = () => {
             });
             console.log('Host balance updated');
 
-          
+            setSuccess('Booking successful!');
             router.push(`/confirmation?bookingId=${bookingId}`);
         } catch (err) {
             const errorMessage = (err as Error).message;
@@ -70,7 +67,7 @@ const useBookHost = () => {
         }
     };
 
-    return { bookHost, loading, error };
+    return { bookHost, loading, error, success };
 };
 
 export default useBookHost;

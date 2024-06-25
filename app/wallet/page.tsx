@@ -5,6 +5,7 @@ import { database, Query } from "@/libs/AppWriteClient"
 import { DATABASE_ID, COLLECTION_ID_PROFILE } from "@/libs/appwriteConfig" 
 import { useUser } from "../context/user";
 import "../components/style.css";
+import Link from 'next/link';
 
 export default function Wallet() {
   const { user } = useUser() ?? { user: null };
@@ -52,8 +53,8 @@ export default function Wallet() {
         
       </div>
       <div id="buttons">
-        <button>Buy Gold</button>
-        <button style={{ backgroundColor: "red" }}>Convert</button>
+       <Link href={`/buy`}><button>Buy Gold</button></Link> 
+        <Link href={`/payout`}><button style={{ backgroundColor: "red" }}>Pay Out</button></Link>
       </div>
       <div id="funds">
         <h2 style={{ color: '#fff' }}>Fund records</h2>

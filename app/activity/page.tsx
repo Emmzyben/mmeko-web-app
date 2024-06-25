@@ -6,7 +6,7 @@ import { Query } from 'appwrite';
 import { useUser } from '../context/user';
 import '../components/style.css';
 
-const Bookings = () => {
+const Activity = () => {
     const { user } = useUser() ?? { user: null };
     const [bookings, setBookings] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
@@ -38,7 +38,7 @@ const Bookings = () => {
 
     return (
         <div>
-            <h1 className='font-bold text-light-orange text-center' style={{ fontSize: '17px' }}>My Bookings</h1>
+            <h1 className='font-bold text-light-orange text-center' style={{ fontSize: '17px' }}>Notifications</h1>
             {loading ? (
                 <div className='text-light-orange' >Loading...</div>
             ) : error ? (
@@ -71,4 +71,4 @@ const Bookings = () => {
     );
 };
 
-export default Bookings;
+export default Activity;

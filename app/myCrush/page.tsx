@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useUser } from "../context/user";
 import getFavouriteHostsForUser from '../hooks/getFavouritesForUser';
 import Image from 'next/image';
@@ -30,20 +30,20 @@ const FavouriteHosts = () => {
     const { user } = useUser() ?? { user: null };
     const [favouriteHosts, setFavouriteHosts] = useState<Host[]>([]);
     const [statuses, setStatuses] = useState<{ [key: string]: string }>({});
+    const [loading, setLoading] = useState(true);
     const [currentPage, setCurrentPage] = useState(1);
     const hostsPerPage = 16;
 
-    useEffect(() => {
-        const fetchFavouriteHosts = async () => {
-            if (user?.id) {
+    const fetchFavouriteHosts = useCallback(async () => {
+        if (user?.id) {
+            setLoading(true);
+            try {
                 const hosts = await getFavouriteHostsForUser(user.id);
-                // Fetch and set statuses for each host
                 const statusPromises = hosts.map(async (host) => {
                     const status = await useGetProfileStatusByUserId(host.user_id);
                     return { ...host, status: status || 'offline' };
                 });
                 const hostsWithStatus = await Promise.all(statusPromises);
-                // Sort hosts by their online status
                 hostsWithStatus.sort((a, b) => (a.status === 'online' ? -1 : 1));
                 setFavouriteHosts(hostsWithStatus);
 
@@ -52,10 +52,17 @@ const FavouriteHosts = () => {
                     statusMap[user_id] = status;
                 });
                 setStatuses(statusMap);
+            } catch (error) {
+                console.error('Error fetching favourite hosts:', error);
+            } finally {
+                setLoading(false);
             }
-        };
-        fetchFavouriteHosts();
+        }
     }, [user]);
+
+    useEffect(() => {
+        fetchFavouriteHosts();
+    }, [fetchFavouriteHosts]);
 
     const indexOfLastHost = currentPage * hostsPerPage;
     const indexOfFirstHost = indexOfLastHost - hostsPerPage;
@@ -81,42 +88,46 @@ const FavouriteHosts = () => {
         <div className='mt-5'>
             <h1 className='font-bold text-[22px] text-light-orange'>My Crush List</h1>
             <div className='grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mt-5'>
-                {currentHosts.length > 0 ? (
-                    currentHosts.map((hostItem, index) => (
-                        <Link key={index} href={`/Details?id=${hostItem.id}`}>
-                            <div className='shadow-md rounded-lg hover:shadow-lg cursor-pointer hover:shadow-primary hover:scale-105 transition-all ease-in-out'>
-                                {hostItem.Image_url && (
-                                    <Image
-                                        src={hostItem.Image_url}
-                                        alt={hostItem.categories}
-                                        width={500}
-                                        height={300}
-                                        className='h-[170px] md:h-[200px] rounded-lg'
-                                    />
-                                )}
-                                <div className='flex flex-col items-baseline p-3 gap-1'>
-                                    <button 
-                                        className='p-1 text-[white] rounded-full px-2 text-[12px]' 
-                                        style={{ backgroundColor: statuses[hostItem.user_id] === 'online' ? "green" : "red" }}
-                                    >
-                                        {statuses[hostItem.user_id] === 'online' ? 'Online' : 'Offline'}
-                                    </button>
-                                    <h2 className='font-bold text-light-orange text-lg'>{hostItem.categories}</h2>
-                                    <h2 className='text-light-orange'>{hostItem.name}</h2>
-                                    <h2 className='text-light-orange'>{hostItem.age}</h2>
-                                    <h2 className='text-gray-500 text-light-orange text-sm'>{hostItem.location}</h2>
-                                    <button style={{padding:"10px"}} className='rounded-lg text-white mt-3 bg-light-orange'>Book Now</button>
-                                </div>
-                            </div>
-                        </Link>
-                    ))
-                ) : (
-                    [1, 2, 3, 4, 5, 6, 7, 8].map((item, index) => (
+                {loading ? (
+                    [1, 2, 3, 4, 5, 6, 7, 8].map((item) => (
                         <div
-                            key={index}
+                            key={item}
                             className='w-full h-[300px] bg-dark-5 rounded-lg animate-pulse text-white'
                         ></div>
                     ))
+                ) : (
+                    currentHosts.length > 0 ? (
+                        currentHosts.map((hostItem, index) => (
+                            <Link key={index} href={`/Details?id=${hostItem.id}`}>
+                                <div className='shadow-md rounded-lg hover:shadow-lg cursor-pointer hover:shadow-primary hover:scale-105 transition-all ease-in-out'>
+                                    {hostItem.Image_url && (
+                                        <Image
+                                            src={hostItem.Image_url}
+                                            alt={hostItem.categories}
+                                            width={500}
+                                            height={300}
+                                            className='h-[170px] md:h-[200px] rounded-lg'
+                                        />
+                                    )}
+                                    <div className='flex flex-col items-baseline p-3 gap-1'>
+                                        <button 
+                                            className='p-1 text-[white] rounded-full px-2 text-[12px]' 
+                                            style={{ backgroundColor: statuses[hostItem.user_id] === 'online' ? "green" : "red" }}
+                                        >
+                                            {statuses[hostItem.user_id] === 'online' ? 'Online' : 'Offline'}
+                                        </button>
+                                        <h2 className='font-bold text-light-orange text-lg'>{hostItem.categories}</h2>
+                                        <h2 className='text-light-orange'>{hostItem.name}</h2>
+                                        <h2 className='text-light-orange'>{hostItem.age}</h2>
+                                        <h2 className='text-gray-500 text-light-orange text-sm'>{hostItem.location}</h2>
+                                        <button style={{padding:"10px"}} className='rounded-lg text-white mt-3 bg-light-orange'>Book Now</button>
+                                    </div>
+                                </div>
+                            </Link>
+                        ))
+                    ) : (
+                        <div>No favourites found.</div>
+                    )
                 )}
             </div>
             <div className="mt-5 flex justify-left gap-2">

@@ -44,8 +44,8 @@
 }#in>div{
     margin-right: 60px;
 }
-#buttons>button{
-color: white;padding: 15px;background-color: orange;border-radius: 10px;width: 50%;margin: 20px;
+#buttons button{
+color: white;padding: 15px;background-color: orange;border-radius: 10px;width: 150px;margin: 20px;
 }
 #buttons{
     display: flex;flex-direction: row;justify-content: space-evenly;

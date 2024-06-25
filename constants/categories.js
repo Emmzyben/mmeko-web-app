@@ -1,4 +1,5 @@
 export const categoryList = [
+  
     {
         id:1,
       imgURL: "/images/vcs.png",
