@@ -14,20 +14,18 @@ const Bookings = () => {
 
     useEffect(() => {
         if (user) {
-            getBookings();
+            getBookings(user.id);
         } else {
             setLoading(false);
         }
     }, [user]);
 
-    const getBookings = async () => {
+    const getBookings = async (userId: string) => {
         try {
             const response = await databases.listDocuments(
                 DATABASE_ID,
                 COLLECTION_ID_BOOKINGS,
-                [
-                    Query.equal('user_id', user.id)
-                ]
+                [Query.equal('user_id', userId)]
             );
             setBookings(response.documents);
         } catch (err) {
@@ -40,9 +38,9 @@ const Bookings = () => {
 
     return (
         <div>
-            <h3 className='font-bold text-light-orange text-center' style={{ fontSize: '17px' }}>My Bookings</h3>
+            <h1 className='font-bold text-light-orange text-center' style={{ fontSize: '17px' }}>My Bookings</h1>
             {loading ? (
-                <div>Loading...</div>
+                <div className='text-light-orange' >Loading...</div>
             ) : error ? (
                 <div>Error: {error}</div>
             ) : !user ? (
@@ -53,7 +51,7 @@ const Bookings = () => {
                 <table className="min-w-full bg-white">
                     <thead>
                         <tr>
-                            <th className="py-2 px-4 border-b">Model Name</th>
+                            <th className="py-2 px-4 border-b">Host Name</th>
                             <th className="py-2 px-4 border-b">Category</th>
                             <th className="py-2 px-4 border-b">Price</th>
                         </tr>
