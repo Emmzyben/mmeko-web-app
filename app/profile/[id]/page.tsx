@@ -69,9 +69,9 @@ export default function Profile({ params }: ProfilePageTypes) {
     return (
         <>
             <MainLayout>
-                <div>
+                <div style={{display:"flex",alignItems:'center',justifyContent:"center", flexDirection:'column'}}>
 
-                    <div className="flex">
+                    <div >
                         <ClientOnly>
                             {currentProfile ? (
                                 <img className="w-[120px] min-w-[120px] rounded-full" src={useCreateBucketUrl(currentProfile?.image)} />
@@ -138,7 +138,7 @@ export default function Profile({ params }: ProfilePageTypes) {
                         </p>
                     </ClientOnly>
 
-                    <ul className="w-full flex items-center pt-4">
+                    <ul style={{display:"flex",alignItems:'center',justifyContent:"center", flexDirection:'column'}} >
                         <li className="w-60 text-gray-500 text-center py-2 text-[17px] font-semibold border-b-2 border-b-red-1">Videos</li>
                     </ul>
 
