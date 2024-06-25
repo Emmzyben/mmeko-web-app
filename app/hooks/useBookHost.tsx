@@ -1,48 +1,69 @@
 import { useState } from 'react';
-import { databases, DATABASE_ID, COLLECTION_ID_BOOKINGS, COLLECTION_ID_PROFILE } from '@/libs/appwriteConfig';
+import { database, Query } from "@/libs/AppWriteClient"
 import { ID } from 'appwrite';
 import { useRouter } from "next/navigation";
+import { DATABASE_ID, COLLECTION_ID_BOOKINGS, COLLECTION_ID_PROFILE } from '@/libs/appwriteConfig';
 
 const useBookHost = () => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const router = useRouter();
 
-    const bookHost = async (hostId: string, userId: string, hostUserId: string, name: string, category: string, price: number) => {
+    const bookHost = async (hostId: string, hostName: string, category: string, price: number, hostUserId: string, userId: string) => {
         setLoading(true);
         setError(null);
-        
+
         try {
-            // Create booking
-            await databases.createDocument(DATABASE_ID, COLLECTION_ID_BOOKINGS, ID.unique(), {
+            const profilesResponse = await database.listDocuments(DATABASE_ID, COLLECTION_ID_PROFILE);
+            const profiles = profilesResponse.documents;
+
+         
+            const user = profiles.find(profile => profile.user_id === userId);
+            const host = profiles.find(profile => profile.user_id === hostUserId);
+
+            if (!user || !host) {
+                throw new Error('User or host profile not found');
+            }
+
+          
+            if (user.balance < price) {
+                throw new Error('Insufficient balance to book host');
+            }
+
+        
+            const bookingId = ID.unique();
+            const bookingData = {
                 hostId,
-                userId,
-                hostUserId,
-                name,
+                host_name: hostName,
                 category,
                 price,
-            });
+                host_user_id: hostUserId,
+                user_id: userId,
+            };
+            await database.createDocument(DATABASE_ID, COLLECTION_ID_BOOKINGS, bookingId, bookingData);
 
-            // Get user and host profiles
-            const userProfile = await databases.getDocument(DATABASE_ID, COLLECTION_ID_PROFILE, userId);
-            const hostProfile = await databases.getDocument(DATABASE_ID, COLLECTION_ID_PROFILE, hostUserId);
+           
+            const userNewBalance = user.balance - price;
+            const hostNewBalance = Math.floor(host.balance + (price * 0.7)); 
 
-            // Calculate new balances
-            const userNewBalance = userProfile.balance - price;
-            const hostNewBalance = hostProfile.balance + (price * 0.7);
-
-            // Update balances
-            await databases.updateDocument(DATABASE_ID, COLLECTION_ID_PROFILE, userId, {
+        
+            await database.updateDocument(DATABASE_ID, COLLECTION_ID_PROFILE, user.$id, {
                 balance: userNewBalance,
             });
-            await databases.updateDocument(DATABASE_ID, COLLECTION_ID_PROFILE, hostUserId, {
+            console.log('User balance updated');
+
+            console.log('Updating host balance for ID:', host.$id);
+            console.log('New host balance:', hostNewBalance);
+            await database.updateDocument(DATABASE_ID, COLLECTION_ID_PROFILE, host.$id, {
                 balance: hostNewBalance,
             });
+            console.log('Host balance updated');
 
-            // Redirect to booking confirmation page or show success message
-            router.push(`/confirmation?bookingId=${ID.unique()}`);
+          
+            router.push(`/confirmation?bookingId=${bookingId}`);
         } catch (err) {
-            setError('An error occurred while booking the host. Please try again.');
+            const errorMessage = (err as Error).message;
+            setError(errorMessage);
             console.error('Error booking host:', err);
         } finally {
             setLoading(false);

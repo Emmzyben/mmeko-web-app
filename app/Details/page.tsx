@@ -53,11 +53,13 @@ const HostDetails = () => {
 
     const getHostDetails = async (hostId: string) => {
         try {
+            console.log('Fetching host details for ID:', hostId);
             const response = await databases.getDocument(DATABASE_ID, COLLECTION_ID_HOST, hostId);
             const hostData = mapDocumentToHost(response);
             setHost(hostData);
 
             // Fetch status for the host's user_id
+            console.log('Fetching profile status for user ID:', response.user_id);
             const hostStatus = await useGetProfileStatusByUserId(response.user_id);
             setStatus(hostStatus || 'offline');
         } catch (error) {
@@ -68,6 +70,7 @@ const HostDetails = () => {
     const checkIfFavourite = async (userId: string | null, hostId: string) => {
         if (!userId) return;
         try {
+            console.log('Checking if host is a favourite for user ID:', userId);
             const response = await databases.listDocuments(
                 DATABASE_ID,
                 COLLECTION_ID_FAVOURITES,
@@ -87,6 +90,7 @@ const HostDetails = () => {
 
         if (isFavourite) {
             try {
+                console.log('Removing from favourites for user ID:', user.id, 'and host ID:', hostId);
                 await useRemoveFavourite(user.id, hostId);
                 setIsFavourite(false);
             } catch (error) {
@@ -94,6 +98,7 @@ const HostDetails = () => {
             }
         } else {
             try {
+                console.log('Adding to favourites for user ID:', user.id, 'and host ID:', hostId);
                 await useCreateFavourite(user.id, hostId);
                 setIsFavourite(true);
             } catch (error) {
@@ -104,7 +109,8 @@ const HostDetails = () => {
 
     const handleBookNow = async () => {
         if (host && user?.id) {
-            await bookHost(hostId!, user.id, host.user_id, host.name, host.categories, host.price);
+            console.log('Booking host with ID:', hostId);
+            await bookHost(hostId!, host.name, host.categories, host.price, host.user_id, user.id);
         }
     };
 
@@ -151,31 +157,32 @@ const HostDetails = () => {
                         <p><strong>Name:</strong> {host.name}</p>
                         <p><strong>Age:</strong> {host.age}</p>
                         <p><strong>Location:</strong> {host.location}</p>
-                        <p><strong>Price:</strong> ${host.price}</p>
+                        <p><strong>Price:</strong> {host.price} Gold</p>
                         <p><strong>Body Type:</strong> {host.bodyType}</p>
                         <p><strong>Smoker:</strong> {host.smoke}</p>
                         <p><strong>Drinker:</strong> {host.drink}</p>
                         <p><strong>Interested In:</strong> {host.interestedIn}</p>
-                        <p><strong>Height:</strong> {host.height} cm</p>
-                        <p><strong>Weight:</strong> {host.weight} kg</p>
+                        <p><strong>Height:</strong> {host.height}</p>
+                        <p><strong>Weight:</strong> {host.weight}</p>
                     </div>
                     <br />
                     <div>
                         <button 
-                            className='p-1 bg-purple-200 text-[white] rounded-full px-2 text-[12px]' 
+                            className='p-1 bg-purple-200 text-[white] rounded-full px-2 text-[12px]'
                             style={{ backgroundColor: status === 'online' ? "green" : "red" }}
                         >
                             {status === 'online' ? 'Online' : 'Offline'}
                         </button>
                         <div id='buttonz'>
                             <button id='btn1'>Message</button>
-                            <button onClick={toggleFavourite} id='btn1'>{isFavourite ? 'Remove from Crush' : 'Add to Crush'}</button>
+                            <button onClick={toggleFavourite} id='btn1'>{isFavourite ? 'Remove from Favourites' : 'Add to Favourites'}</button>
                         </div>
                         {hostId && (
                             <button id='btn2' onClick={handleBookNow} disabled={loading}>
                                 {loading ? 'Processing...' : 'Book Now'}
                             </button>
                         )}
+                        {error && <p style={{ color: 'red' }}>{error}</p>}
                     </div>
                 </div>
             </div>
@@ -183,7 +190,7 @@ const HostDetails = () => {
                 <h1><strong>Title:</strong> {host.title}</h1>
                 <p><strong>Description:</strong> {host.description}</p>
             </div>
-            {error && <p className="error">{error}</p>}
+            
         </div>
     );
 };

@@ -94,6 +94,27 @@ font-size: 15px;padding: 10px;
         #buttonz>#btn1:hover{
             background-color: rgb(218, 32, 32);
         }
+        /* style.css */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    font-size: 18px;
+    text-align: left;
+}
+
+th, td {
+    padding: 12px 15px;
+}
+
+th {
+    background-color: #f4f4f4;
+}
+
+tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
 @media screen and (max-width:700px){
     #data{
         display: flex;flex-direction: column-reverse;
