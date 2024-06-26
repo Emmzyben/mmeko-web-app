@@ -149,10 +149,10 @@ tr:nth-child(even) {
 }
 
 #buy form>select{
-    padding: 10px;width: 200px;margin-top: 10px;border: none;border-top-left-radius: 15px;border-bottom-left-radius: 15px;
+    padding: 10px;width: 200px;margin-top: 10px;border: none;
 }
 #subm{
-    color: white;padding: 10px;background-color: orange;width: 150px;margin-top:10px;border: none;border-top-right-radius: 15px;border-bottom-right-radius: 15px;
+    color: white;padding: 10px;background-color: orange;width: 150px;margin-top:10px;border: none;border-radius: 10px;
 }
 #subm:hover{
         background-color: rgb(218, 32, 32);

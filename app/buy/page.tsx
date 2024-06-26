@@ -64,7 +64,7 @@ const Activity = () => {
                       <option value="49.99">550 gold</option>
                       <option value="69.99">750 gold</option>
                       <option value="79.99">1000 gold</option>
-                        </select>
+                        </select><br />
                         <input type="submit" name="" id="subm" value={"Fund"} />
                     </form>
                 </div>
