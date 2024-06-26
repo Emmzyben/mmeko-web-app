@@ -51,6 +51,23 @@ const Activity = () => {
                             </tr>
                     </tbody>
                 </table>
+
+                <div id='buy'>
+                    <h3>Fund your wallet</h3>
+                    <p>Select amount of gold to fund</p>
+                    <form action="">
+                        <select name="pricelist" id="">
+                      <option value="6.99">50 gold</option>
+                      <option value="10.99">100 gold</option>
+                      <option value="20.99">200 gold</option>
+                      <option value="39.99">400 gold</option>
+                      <option value="49.99">550 gold</option>
+                      <option value="69.99">750 gold</option>
+                      <option value="79.99">1000 gold</option>
+                        </select>
+                        <input type="submit" name="" id="subm" value={"Fund"} />
+                    </form>
+                </div>
         </div>
     );
 };
