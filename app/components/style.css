@@ -115,17 +115,15 @@ tr:nth-child(even) {
     background-color: #f9f9f9;
 }
 #analytics{
-    display: flex;flex-direction: row;align-items: center;justify-content: space-evenly;flex-wrap: wrap;
+    display: flex;flex-direction: row;align-items: center;justify-content: center;flex-wrap: wrap;
 }
 #analytics>div{
 width:46%; border: 1px solid orange;height: 300px;padding: 10px;color: gray;border-radius: 10px;margin: 10px;
 }
 @media screen and (max-width:700px){
-    #analytics{
-        flex-direction: column;flex-wrap: nowrap;
-    }
+   
     #analytics>div{
-        width: 100%;
+        width: 45%;margin: 5px;font-size: small;
     }
     table {
         width: 80%;
