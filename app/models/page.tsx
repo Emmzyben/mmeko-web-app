@@ -1,5 +1,4 @@
-"use client";
-
+"use client"
 import React, { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
@@ -83,13 +82,13 @@ const Models = () => {
                             hosts.map((hostItem) => (
                                 <Link key={hostItem.$id} href={`/Details?id=${hostItem.$id}`}>
                                     <div className='shadow-md rounded-lg hover:shadow-lg cursor-pointer hover:shadow-primary hover:scale-105 transition-all ease-in-out'>
-                                        {hostItem.Image_url && (
+                                        {hostItem.Image_urls && hostItem.Image_urls.length > 0 && (
                                             <Image
-                                                src={hostItem.Image_url}
+                                                src={hostItem.Image_urls[0]} // Displaying the first image URL
                                                 alt={hostItem.categories}
                                                 width={500}
                                                 height={300}
-                                                className='h-[170px] md:h-[200px] rounded-lg'
+                                                className='h-[150px] md:h-[180px] rounded-lg'
                                             />
                                         )}
                                         <div className='flex flex-col items-baseline p-3 gap-1'>

@@ -13,10 +13,11 @@ import useGetProfileStatusByUserId from '../hooks/useGetProfileStatusByUserId';
 import useBookHost from '../hooks/useBookHost';
 import "../components/style.css";
 
+
 interface Host {
     user_id: string;
     title: string;
-    Image_url: string;
+    Image_urls: string[];
     categories: string;
     name: string;
     age: number;
@@ -29,15 +30,17 @@ interface Host {
     interestedIn: string[];
     height: number;
     weight: number;
+    Duration: string;
 }
 
 const HostDetails = () => {
-    const { user } = useUser() ?? { user: null };  
     const router = useRouter();
+    const { user } = useUser() ?? { user: null };
     const [host, setHost] = useState<Host | null>(null);
     const [hostId, setHostId] = useState<string | null>(null);
-    const [isFavourite, setIsFavourite] = useState<boolean>(false);
+    const [currentImageIndex, setCurrentImageIndex] = useState(0);
     const [status, setStatus] = useState<string>('offline');
+    const [isFavourite, setIsFavourite] = useState<boolean>(false);
     const { bookHost, loading, error, success } = useBookHost();
 
     useEffect(() => {
@@ -54,13 +57,11 @@ const HostDetails = () => {
 
     const getHostDetails = async (hostId: string) => {
         try {
-            console.log('Fetching host details for ID:', hostId);
             const response = await databases.getDocument(DATABASE_ID, COLLECTION_ID_HOST, hostId);
             const hostData = mapDocumentToHost(response);
             setHost(hostData);
 
             // Fetch status for the host's user_id
-            console.log('Fetching profile status for user ID:', response.user_id);
             const hostStatus = await useGetProfileStatusByUserId(response.user_id);
             setStatus(hostStatus || 'offline');
         } catch (error) {
@@ -71,7 +72,6 @@ const HostDetails = () => {
     const checkIfFavourite = async (userId: string | null, hostId: string) => {
         if (!userId) return;
         try {
-            console.log('Checking if host is a favourite for user ID:', userId);
             const response = await databases.listDocuments(
                 DATABASE_ID,
                 COLLECTION_ID_FAVOURITES,
@@ -91,7 +91,6 @@ const HostDetails = () => {
 
         if (isFavourite) {
             try {
-                console.log('Removing from favourites for user ID:', user.id, 'and host ID:', hostId);
                 await useRemoveFavourite(user.id, hostId);
                 setIsFavourite(false);
             } catch (error) {
@@ -99,7 +98,6 @@ const HostDetails = () => {
             }
         } else {
             try {
-                console.log('Adding to favourites for user ID:', user.id, 'and host ID:', hostId);
                 await useCreateFavourite(user.id, hostId);
                 setIsFavourite(true);
             } catch (error) {
@@ -110,7 +108,6 @@ const HostDetails = () => {
 
     const handleBookNow = async () => {
         if (host && user?.id) {
-            console.log('Booking host with ID:', hostId);
             await bookHost(hostId!, host.name, host.categories, host.price, host.user_id, user.id);
         }
     };
@@ -119,7 +116,7 @@ const HostDetails = () => {
         return {
             user_id: document.user_id,
             title: document.title,
-            Image_url: document.Image_url,
+            Image_urls: document.Image_urls || [],
             categories: document.categories,
             name: document.name,
             age: document.age,
@@ -132,7 +129,16 @@ const HostDetails = () => {
             interestedIn: document.interestedIn,
             height: document.height,
             weight: document.weight,
+            Duration: document.Duration,
         };
+    };
+
+    const nextImage = () => {
+        setCurrentImageIndex((prevIndex) => (prevIndex + 1) % host!.Image_urls.length);
+    };
+
+    const prevImage = () => {
+        setCurrentImageIndex((prevIndex) => (prevIndex - 1 + host!.Image_urls.length) % host!.Image_urls.length);
     };
 
     if (!host) {
@@ -142,15 +148,21 @@ const HostDetails = () => {
     return (
         <div id='details'>
             <div id='indetail'>
-                <div>
-                    {host.Image_url && (
-                        <Image
-                            src={host.Image_url}
-                            alt={host.categories}
-                            width={300}
-                            height={200}
-                            id='image'
-                        />
+                <div className='image-slider'>
+                    {host.Image_urls.length > 0 && (
+                        <>
+                            <button onClick={prevImage} className='slider-button prev'>Previous</button>
+                            <button onClick={nextImage} className='slider-button next'>Next</button>
+                            <div className='image-container'>
+                                <Image
+                                    src={host.Image_urls[currentImageIndex]}
+                                    alt={host.categories}
+                                    layout="fill"
+                                    objectFit="cover"
+                                    quality={100}
+                                />
+                            </div>
+                        </>
                     )}
                 </div>
                 <div id='data'>
@@ -159,16 +171,17 @@ const HostDetails = () => {
                         <p><strong>Age:</strong> {host.age}</p>
                         <p><strong>Location:</strong> {host.location}</p>
                         <p><strong>Price:</strong> {host.price} Gold</p>
+                        <p><strong>Duration:</strong> {host.Duration}</p>
                         <p><strong>Body Type:</strong> {host.bodyType}</p>
-                        <p><strong>Smoke:</strong> {host.smoke ? 'Yes' : 'No'}</p>
-                        <p><strong>Drink:</strong> {host.drink ? 'Yes' : 'No'}</p>
-                        <p><strong>Interested In:</strong> {host.interestedIn.join(', ')}</p>
+                        <p><strong>Smoke:</strong> {host.smoke}</p>
+                        <p><strong>Drink:</strong> {host.drink}</p>
+                        <p><strong>Interested In:</strong> {host.interestedIn}</p>
                         <p><strong>Height:</strong> {host.height} cm</p>
                         <p><strong>Weight:</strong> {host.weight} kg</p>
                     </div>
                     <br />
                     <div>
-                        <button 
+                        <button
                             className='p-1 bg-purple-200 text-[white] rounded-full px-2 text-[12px]'
                             style={{ backgroundColor: status === 'online' ? "green" : "red" }}
                         >
@@ -183,8 +196,8 @@ const HostDetails = () => {
                                 {loading ? 'Processing...' : 'Book Now'}
                             </button>
                         )}
-                        {error && <p style={{ color: 'red' ,textAlign:'center'}}>{error}</p>}
-                        {success && <p style={{ color: 'green',textAlign:'center' }}>{success}</p>}
+                        {error && <p style={{ color: 'red', textAlign: 'center' }}>{error}</p>}
+                        {success && <p style={{ color: 'green', textAlign: 'center' }}>{success}</p>}
                     </div>
                 </div>
             </div>

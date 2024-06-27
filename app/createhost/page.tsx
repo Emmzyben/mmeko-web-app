@@ -8,6 +8,7 @@ import { useRouter } from "next/navigation";
 import { UploadError } from "../types";
 import { Client, Storage } from "appwrite";
 import "../components/style.css";
+import { duration } from 'moment';
 
 export default function CreateHost() {
   const inputClassName =
@@ -37,6 +38,7 @@ export default function CreateHost() {
     height: "",
     weight: "",
     location: "",
+    Duration:"",
   });
 
   const handleChange = (e) => {
@@ -49,8 +51,8 @@ export default function CreateHost() {
   const contextUser = useUser();
   const router = useRouter();
 
-  let [fileDisplay, setFileDisplay] = useState<string>("");
-  const [url, setUrl] = useState<string>("");
+  const [fileDisplays, setFileDisplays] = useState<string[]>([]);
+  const [urls, setUrls] = useState<string[]>([]);
   let [error, setError] = useState<UploadError | null>(null);
   let [isUploading, setIsUploading] = useState<boolean>(false);
 
@@ -58,36 +60,44 @@ export default function CreateHost() {
     if (!contextUser?.user) router.push("/models");
   }, [contextUser, router]);
 
-  const handleSubmit = async (event) => {
+  const handleSubmit = async (event: React.ChangeEvent<HTMLInputElement>) => {
     event.preventDefault();
-    const file = event.target.files[0];
-  
-    if (!file) {
+    const files = event.target.files;
+
+    if (!files || files.length === 0) {
       return alert("No files selected");
     }
-  
-    try {
-      const response = await storage.createFile(
-        String(process.env.NEXT_PUBLIC_BUCKET_ID_HOST),
-        'unique()',
-        file
-      );
-      const fileId = response.$id;
-      const fileUrl = `${process.env.NEXT_PUBLIC_APPWRITE_URL}/storage/buckets/${process.env.NEXT_PUBLIC_BUCKET_ID_HOST}/files/${fileId}/view?project=${process.env.NEXT_PUBLIC_ENDPOINT}`;
-      setUrl(fileUrl);
-      setFileDisplay(fileUrl);
-    } catch (error) {
-      console.error("Error uploading file to Appwrite:", error);
-      alert("File upload failed. Please try again.");
+
+    const newUrls: string[] = [];
+    const newFileDisplays: string[] = [];
+
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+      try {
+        const response = await storage.createFile(
+          String(process.env.NEXT_PUBLIC_BUCKET_ID_HOST),
+          'unique()', // Replace 'unique()' with a unique identifier if necessary
+          file
+        );
+        const fileId = response.$id;
+        const fileUrl = `${process.env.NEXT_PUBLIC_APPWRITE_URL}/storage/buckets/${process.env.NEXT_PUBLIC_BUCKET_ID_HOST}/files/${fileId}/view?project=${process.env.NEXT_PUBLIC_ENDPOINT}`;
+        newUrls.push(fileUrl);
+        newFileDisplays.push(fileUrl);
+      } catch (error) {
+        console.error("Error uploading file to Appwrite:", error);
+        alert("File upload failed. Please try again.");
+      }
     }
+
+    setUrls((prevUrls) => [...prevUrls, ...newUrls]);
+    setFileDisplays((prevFileDisplays) => [...prevFileDisplays, ...newFileDisplays]);
   };
-  
 
   const validate = () => {
     setError(null);
     let isError = false;
 
-    if (!url) {
+    if (!urls) {
       setError({ type: "File", message: "A picture is required" });
       isError = true;
     } else if (!data.title) {
@@ -129,6 +139,9 @@ export default function CreateHost() {
     } else if (!data.price) {
       setError({ type: "price", message: "A price is required" });
       isError = true;
+    }else if (!data.Duration) {
+      setError({ type: " Duration", message: "A  Duration is required" });
+      isError = true;
     }
 
     return isError;
@@ -137,12 +150,12 @@ export default function CreateHost() {
   const createNewHost = async () => {
     let isError = validate();
     if (isError) return;
-    if (!url || !contextUser?.user) return;
+    if (!urls || !contextUser?.user) return;
     setIsUploading(true);
 
     try {
       await useCreateHost(
-        url,
+        urls,
         contextUser?.user?.id,
         data.title,
         data.description,
@@ -156,7 +169,8 @@ export default function CreateHost() {
         data.drink,
         data.interestedIn,
         data.height,
-        data.weight
+        data.weight,
+        data.Duration,
       );
       alert("Posting successful!");
       setIsUploading(false);
@@ -330,9 +344,12 @@ export default function CreateHost() {
               onChange={handleChange}
             >
               <option value="">Select option</option>
-              <option value="male">Male</option>
-              <option value="female">Female</option>
-              <option value="trans">Trans</option>
+              <option value="Men">Men</option>
+              <option value="women">Women</option>
+              <option value="Men and Women">Men and Women</option>
+              <option value="Couples">Couples</option>
+              <option value="Trans">Trans</option>
+              <option value="Men,Women,Couples and Trans">All</option>
             </select>
           </div>
 
@@ -383,18 +400,42 @@ export default function CreateHost() {
               onChange={handleChange}
             />
           </div>
-          <div className="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500">
-            <label className={labelClassName} htmlFor="fileUpload">
-              Upload Image
+          <div>
+            <label htmlFor="Duration" className={labelClassName}>
+               Duration
             </label>
-            <br />
-            <input type="file" id="fileUpload" name="fileUpload" onChange={handleSubmit} />
-            <br />
-            <br />
-            {fileDisplay && (
-              <img src={fileDisplay} alt="Uploaded file" height={"150px"} width={"150px"} />
-            )}
+            <select
+              className={`${inputClassName} w-1/5`}
+              id="Duration"
+              name="Duration"
+              value={data.Duration}
+              onChange={handleChange}
+            >
+              <option value="">Select option</option>
+              <option value="10mins">10mins</option>
+              <option value="30mins">30mins</option>
+              <option value="1hour">1hour</option>
+              <option value="3hours">3hours</option>
+              <option value="12hours">12hours</option>
+              <option value="24hours">24hours</option>
+            </select>
           </div>
+          <div className="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500">
+      <label className="labelClassName" htmlFor="fileUpload">
+        Upload Images
+      </label>
+      <br />
+      <input type="file" id="fileUpload" name="fileUpload" multiple onChange={handleSubmit} />
+      <br />
+      <br />
+      {fileDisplays.length > 0 && (
+        <div>
+          {fileDisplays.map((fileDisplay, index) => (
+            <img key={index} src={fileDisplay} alt={`Uploaded file ${index + 1}`} height="150px" width="150px" />
+          ))}
+        </div>
+      )}
+    </div>
           <div>
         
           </div>
