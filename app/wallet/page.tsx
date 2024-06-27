@@ -56,10 +56,30 @@ export default function Wallet() {
        <Link href={`/buy`}><button>Buy Gold</button></Link> 
         <Link href={`/payout`}><button style={{ backgroundColor: "red" }}>Pay Out</button></Link>
       </div>
-      <div id="funds">
-        <h2 style={{ color: '#fff' }}>Fund records</h2>
+
+
+<div style={{color:'gray',textAlign:'center',marginTop:'20px'}}>
+  <p>Account analytics for the last 28 days</p>
+</div>
+      <div id="analytics">
+        <div>
+        <h2>Bookings</h2>
+        <hr />
+      </div>
+      <div>
+        <h2 >Earnings</h2>
         <hr/>
       </div>
+      <div>
+        <h2 >Gifts</h2>
+        <hr/>
+      </div>
+      <div>
+        <h2 >Views</h2>
+        <hr/>
+      </div>
+      </div>
+      
     </div>
   );
 }

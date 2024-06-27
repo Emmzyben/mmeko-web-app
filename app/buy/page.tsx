@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { databases, DATABASE_ID, COLLECTION_ID_BOOKINGS } from '@/libs/appwriteConfig';
 import { Query } from 'appwrite';
 import { useUser } from '../context/user';
+import Link from 'next/link';
 import '../components/style.css';
 
 const Activity = () => {
@@ -11,61 +12,28 @@ const Activity = () => {
 
     return (
         <div>
-            <h1 className='font-bold text-light-orange text-center' style={{ fontSize: '17px' }}>Buy Gold</h1>
-            <p className='font-bold text-light-orange text-center' >Fund your account with gold, Here is the value of gold converted to dollars</p>
-                <table className="min-w-full bg-white">    
-                    <thead>
-                        <tr>
-                            <th className="py-2 px-4 border-b">Gold</th>
-                            <th className="py-2 px-4 border-b">Value($)</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                          <tr>
-                                <td className="py-2 px-4 border-b">50 gold</td>
-                                <td className="py-2 px-4 border-b">$6.99</td>
-                            </tr>
-                            <tr>
-                                <td className="py-2 px-4 border-b">100 gold</td>
-                                <td className="py-2 px-4 border-b">$10.99</td>
-                            </tr>
-                            <tr>
-                                <td className="py-2 px-4 border-b">200 gold</td>
-                                <td className="py-2 px-4 border-b">$20.99</td>
-                            </tr>
-                            <tr>
-                                <td className="py-2 px-4 border-b">400 gold</td>
-                                <td className="py-2 px-4 border-b">$39.99</td>
-                            </tr>
-                            <tr>
-                                <td className="py-2 px-4 border-b">550 gold</td>
-                                <td className="py-2 px-4 border-b">$49.99</td>
-                            </tr>
-                            <tr>
-                                <td className="py-2 px-4 border-b">750 gold</td>
-                                <td className="py-2 px-4 border-b">$69.99</td>
-                            </tr>
-                            <tr>
-                                <td className="py-2 px-4 border-b">1000 gold</td>
-                                <td className="py-2 px-4 border-b">$79.99</td>
-                            </tr>
-                    </tbody>
-                </table>
+            <h1 className='font-bold text-center' style={{ fontSize: '17px',color:"grey" }}>Choose Gold Amount</h1>
+           
 
                 <div id='buy'>
-                    <h3>Fund your wallet</h3>
-                    <p>Select amount of gold to fund</p>
                     <form action="">
-                        <select name="pricelist" id="">
-                      <option value="6.99">50 gold</option>
-                      <option value="10.99">100 gold</option>
-                      <option value="20.99">200 gold</option>
-                      <option value="39.99">400 gold</option>
-                      <option value="49.99">550 gold</option>
-                      <option value="69.99">750 gold</option>
-                      <option value="79.99">1000 gold</option>
+                        <select name="card" id="">
+                            <option value="">Select Payment Method</option>
+                            <option value="credit/debit">Credit/Debit Card</option>
+                            <option value="Visa/Mastercard">Visa/Mastercard</option>
                         </select><br />
-                        <input type="submit" name="" id="subm" value={"Fund"} />
+                        <select name="pricelist" id="">
+                        <option value="">Choose Gold amount</option>
+                      <option value="79.99">1000 Gold for $79.99 (37% Bonus)</option>
+                      <option value="62.99">750 Gold for $62.99 (32% Bonus)</option>
+                      <option value="49.99">550 Gold for $49.99 (21% Bonus)</option>
+                      <option value="39.99">400 Gold for $39.99 (10% Bonus)</option>
+                      <option value="20.99">200 Gold for $20.99 (5% Bonus)</option>
+                      <option value="10.99">100 Gold for $10.99</option>
+                      <option value="6.99">50 Gold for $6.99</option>
+                        </select><br />
+                        <input type="submit" name="" id="subm" value={"Continue To Payment Page"} /><br/><br />
+                        <p style={{color:'grey',fontSize:'13px'}}>In order to serve you better, Please take a minute to give us your <Link href="/support" style={{color:'orange'}}>feedback</Link> </p>
                     </form>
                 </div>
         </div>

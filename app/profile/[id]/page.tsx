@@ -71,21 +71,21 @@ export default function Profile({ params }: ProfilePageTypes) {
             <MainLayout>
                 <div style={{display:"flex",alignItems:'center',justifyContent:"center", flexDirection:'column'}}>
 
-                    <div >
+                    <div style={{display:"flex",alignItems:'center',justifyContent:"center", flexDirection:'column'}}>
                         <ClientOnly>
                             {currentProfile ? (
                                 <img className="w-[120px] min-w-[120px] rounded-full" src={useCreateBucketUrl(currentProfile?.image)} />
                             ) : (
                                 <div className="min-w-[150px] h-[120px] bg-gray-200 rounded-full" />
                             )}
-                        </ClientOnly>
+                        </ClientOnly> 
 
                         <div className="ml-5 w-full">
                             <ClientOnly>
                                 {(currentProfile as User)?.name ? (
                                     <div>
-                                        <p className="text-[30px] text-light-orange font-bold truncate">{currentProfile?.name}</p>
-                                        <p className="text-[18px] text-zinc truncate">{currentProfile?.name}</p>
+                                        <p className="text-[30px] text-light-orange font-bold truncate ">{currentProfile?.name}</p>
+                                       
                                     </div>
                                 ) : (
                                     <div className="h-[60px]" />
@@ -145,7 +145,7 @@ export default function Profile({ params }: ProfilePageTypes) {
                     <ClientOnly>
                         <div className="mt-4 grid 2xl:grid-cols-6 xl:grid-cols-5 lg:grid-cols-4 md:grid-cols-3 grid-cols-2 gap-3">
                             {postsByUser?.map((post, index) => (
-                                <PostUser key={index} post={post} />
+                                <PostUser key={index} post={post}/>
                             ))}
                         </div>
                     </ClientOnly>

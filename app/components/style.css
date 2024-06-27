@@ -114,8 +114,19 @@ th {
 tr:nth-child(even) {
     background-color: #f9f9f9;
 }
-
+#analytics{
+    display: flex;flex-direction: row;align-items: center;justify-content: space-evenly;flex-wrap: wrap;
+}
+#analytics>div{
+width:46%; border: 1px solid orange;height: 300px;padding: 10px;color: gray;border-radius: 10px;margin: 10px;
+}
 @media screen and (max-width:700px){
+    #analytics{
+        flex-direction: column;flex-wrap: nowrap;
+    }
+    #analytics>div{
+        width: 100%;
+    }
     table {
         width: 80%;
     }
@@ -149,12 +160,16 @@ tr:nth-child(even) {
 }
 
 #buy form>select{
-    padding: 10px;width: 200px;margin-top: 10px;border: none;
+padding: 10px;width: 100%;margin-top: 10px;border: none;border-radius: 7px;margin-bottom: 15px;
 }
+
 #subm{
-    color: white;padding: 10px;background-color: orange;width: 150px;margin-top:10px;border: none;border-radius: 10px;
+  color: white;padding: 10px;background-color: orange;width: auto;margin-top:10px;border: none;border-radius: 7px;
 }
+
 #subm:hover{
-        background-color: rgb(218, 32, 32);
-    }
+    background-color: rgb(218, 32, 32);
+}
+
+
 
